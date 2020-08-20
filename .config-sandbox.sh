@@ -33,8 +33,8 @@ function container_exec_cache(){
 }
 
 function kafka_exec_cache(){
-	container_exec_cache kafka-exec-cache docker.io/confluentinc/cp-kafka
+	container_exec_cache kafka-exec-cache docker.io/confluentinc/cp-kafka:5.5.1
 }
 function kafkacat_exec_cache(){
-	container_exec_cache kafkacat-exec-cache docker.io/confluentinc/cp-kafkacat
+	container_exec_cache kafkacat-exec-cache docker.io/confluentinc/cp-kafkacat:5.5.1
 }
