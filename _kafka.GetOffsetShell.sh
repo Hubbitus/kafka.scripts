@@ -1,5 +1,7 @@
 #!/usr/bin/bash
 
+# Script to obtain topic offsets (effectively amount of messages in it)
+
 source "$(dirname $0)/.config.sh"
 
 # By https://stackoverflow.com/questions/28579948/java-how-to-get-number-of-messages-in-a-topic-in-apache-kafka/50083376#50083376
