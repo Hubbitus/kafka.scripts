@@ -10,4 +10,5 @@ source "$(dirname $0)/.config.sh"
 docker exec -it $(kafka_exec_cache) kafka-console-consumer --bootstrap-server $KAFKA_BOOTSTRAP_SERVERS \
 	--from-beginning \
 	--property print.key=true \
-	--topic ${TOPIC} 2>&1 "$@"
+	--topic ${TOPIC} 2>&1 \
+		"$@"
