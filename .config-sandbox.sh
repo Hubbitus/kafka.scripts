@@ -1,9 +1,9 @@
 set -ueo pipefail;
 
-source "$(dirname $0)/_shared.sh"
-
 alias docker=podman
 shopt -s expand_aliases
+
+source "$(dirname $0)/_shared.sh"
 
 : ${KAFKA_CONNECT_HOST:=localhost:8083}
 : ${KAFKA_BOOTSTRAP_SERVERS:=PLAINTEXT://ecsc00a060af.epam.com:9092,PLAINTEXT://ecsc00a060b0.epam.com:9092,PLAINTEXT://ecsc00a060b1.epam.com:9092,PLAINTEXT://ecsc00a060b2.epam.com:9092,PLAINTEXT://ecsc00a060b3.epam.com:9092}
