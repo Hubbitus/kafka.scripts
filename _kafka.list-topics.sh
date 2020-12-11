@@ -11,4 +11,5 @@ source "$(dirname $0)/.config.sh"
 
 docker exec -it $(kafka_exec_cache) kafka-topics --bootstrap-server "${KAFKA_BOOTSTRAP_SERVERS}" \
 	--list 2>&1 \
-		| grep -P ${KAFKA_TOPICS_FILTER-.} \
+		| sed 's/\r//g' \
+			| grep -P ${KAFKA_TOPICS_FILTER-.}
