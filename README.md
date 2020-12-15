@@ -4,7 +4,7 @@ Various kafka-related scripts to easily inspect and manage the cluster, topics, 
 
 ## Usage
 
-Just create [.config.sh]() file by example with said [.config-sandbox.sh](). It is recommentded use symlink to switch beetween configurations.
+Just create [.config.sh](.config.sh) file by example with said [.config-sandbox.sh](.config-sandbox.sh). It is recommentded use symlink to switch beetween configurations.
 
 And then just call any script like:
 
