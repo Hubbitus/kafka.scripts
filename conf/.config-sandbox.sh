@@ -20,4 +20,5 @@ source "$(dirname $0)/.shared.sh"
 # In ./_connect.status-connector.sh script provide info by connector *tasks* or not. Set 'false' if it is not interesting
 : ${CONNECTOR_STATUS_TASKS:=true}
 
-: ${KSQLDB_SERVER:=http://localhost:8088}
+#: ${KSQLDB_SERVER:=http://localhost:8088}
+: ${KSQLDB_SERVER:=http://ksqldb-2-epm-ssdl-ksqldb.by.paas.epam.com}

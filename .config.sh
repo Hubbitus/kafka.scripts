@@ -1,1 +1,1 @@
-.config-sandbox.sh
+conf/.config-sandbox.sh
