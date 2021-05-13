@@ -19,7 +19,7 @@ _conf_dir=$(dirname $(realpath "$BASH_SOURCE"))
 
 CONTAINER_CACHE_EXTRA_OPTIONS=("-v${_conf_dir}:/conf" "-v${_conf_dir}/krb5.conf:/etc/krb5.conf")
 
-# In command below we mount /conf for holds certificates and keystores. Paswd file allso must contain passwork for kerberos account,
+# In command below we mount /conf for holds certificates and keystores. Paswd file allso must contain password for kerberos account,
 # provided in sasl.kerberos.kinit.cmd line. Please be careful and NEVER commit sensitive information into git!!!
 KAFKACAT_SECURE_OPTIONS=(
 	'-Xssl.ca.location=/conf/epm-eco-prod.ca.crt'

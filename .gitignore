@@ -6,9 +6,7 @@
 *.KDump
 *.KDump.*.jsons
 
-# Password, sensitive:
-/conf/paswd
-
+# Password, sensitive. Paswd especially named with single s to do not match common patterns!
+paswd
 # Private certificates:
 *.crt
-
