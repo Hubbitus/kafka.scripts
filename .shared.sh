@@ -12,8 +12,8 @@ function container_exec_cache(){
 	shift;shift
 
 	# grep -q required: https://github.com/moby/moby/issues/35057#issuecomment-333476596
-	docker ps -q --filter "name=${_name}" --filter status=running | grep -q . \
-		|| (docker rm -vf "${_name}" &>/dev/null || : ; docker run --rm -d --entrypoint sleep "$@" --name "${_name}" "${_image}" 1h > /dev/null )
+	podman ps -q --filter "name=${_name}" --filter status=running | grep -q . \
+		|| (podman rm -vf "${_name}" &>/dev/null || : ; podman run --rm -d --entrypoint sleep "$@" --name "${_name}" "${CONTAINER_CACHE_EXTRA_OPTIONS[@]}" "${_image}" 1h > /dev/null )
 
 	echo "${_name}"
 }
@@ -23,7 +23,8 @@ function kafka_exec_cache(){
 }
 function kafkacat_exec_cache(){
 #	container_exec_cache kafkacat-exec-cache docker.io/confluentinc/cp-kafkacat:5.5.1
-	container_exec_cache kafkacat-exec-cache docker.io/edenhill/kafkacat:1.6.0
+#	container_exec_cache kafkacat-exec-cache docker.io/edenhill/kafkacat:1.6.0
+	container_exec_cache kafkacat-exec-cache docker.io/hubbitus/kafkacat-sasl:8916a0956
 }
 
 function kafkactl_exec_cache(){

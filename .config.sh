@@ -1,1 +1,1 @@
-conf/.config-sandbox.sh
+conf/integration/.config.sh

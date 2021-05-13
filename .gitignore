@@ -1,5 +1,14 @@
 
 /BAK/
+*.BAK
 
 # Files to dump topic content
 *.KDump
+*.KDump.*.jsons
+
+# Password, sensitive:
+/conf/paswd
+
+# Private certificates:
+*.crt
+

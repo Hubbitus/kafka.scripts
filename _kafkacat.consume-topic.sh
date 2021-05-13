@@ -14,5 +14,5 @@ See also _kafkacat.consume-topic.lastN.sh script for simplicity"}
 source "$(dirname $0)/_kafkacat.sh" \
 	-C -t ${TOPIC} \
 	-u \
-	-f '\nKey (%K bytes): %k\t\nValue (%S bytes): %s\n\Partition: %p\tOffset: %o\n--\n' \
+	"${KAFKACAT_CONSOME_TOPIC_FORMAT}" \
 		"$@"
