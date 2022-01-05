@@ -29,7 +29,7 @@ source $(dirname $0)/.config.sh
 
 # AUTOMATE THAT (https://stackoverflow.com/questions/37454308/script-kerberos-ktutil-to-make-keytabs):
 
-if [[ 'x' != "${KERBEROS_PASS_FILE:=x}" ]]; then
+if [[ 'x' != "${KERBEROS_PASS_FILE:-x}" ]]; then
 	pass="$(cat ${KERBEROS_PASS_FILE})"
 else
 	read -sp "Enter password for the account [${KERBEROS_USER}] (will not be echoed): " pass

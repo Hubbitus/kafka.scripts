@@ -21,7 +21,7 @@ _conf_dir=$(dirname $(realpath "$BASH_SOURCE"))
 CONTAINER_CACHE_EXTRA_OPTIONS=("-v${_conf_dir}:/conf" "-v${_conf_dir}/krb5.conf:/etc/krb5.conf" '--env=KAFKA_HEAP_OPTS=-Xmx1024M')
 
 : ${KERBEROS_USER:='Pavel_Alexeev@PETERSBURG.EPAM.COM'}
-: ${KERBEROS_PASS_FILE:="${_conf_dir}/paswd"}
+: ${KERBEROS_PASS_FILE="${_conf_dir}/paswd"}
 : ${KERBEROS_KEYTAB_FILE:="${_conf_dir}/${KERBEROS_USER}.keytab"}
 
 # In command below we mount /conf for holds certificates and keystores.
