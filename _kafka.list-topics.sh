@@ -9,6 +9,9 @@ source "$(dirname $0)/.config.sh"
 
 : ${KAFKA_BOOTSTRAP_SERVERS?"Not enough vars set: KAFKA_BOOTSTRAP_SERVERS required"}
 
-docker exec $(kafka_exec_cache) kafka-topics --bootstrap-server "${KAFKA_BOOTSTRAP_SERVERS}" \
+set -x
+
+#KAFKA_HEAP_OPTS="-Xmx2048M" kafka-topics --bootstrap-server "${KAFKA_BOOTSTRAP_SERVERS}" \
+podman exec $(kafka_exec_cache) kafka-topics --bootstrap-server "${KAFKA_BOOTSTRAP_SERVERS}" \
 	--list 2>&1 \
 		| grep -P ${KAFKA_TOPICS_FILTER-.}
