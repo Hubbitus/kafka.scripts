@@ -7,7 +7,7 @@ source "$(dirname $0)/.config.sh"
 : ${TOPIC?"Not enough vars set: TOPIC required. Example: TOPIC=topic1 $0"}
 
 
-docker exec -it $(kafka_exec_cache) kafka-console-consumer --bootstrap-server $KAFKA_BOOTSTRAP_SERVERS \
+podman exec -it $(kafka_exec_cache) kafka-console-consumer --bootstrap-server $KAFKA_BOOTSTRAP_SERVERS \
 	--from-beginning \
 	--property print.key=true \
 	--topic ${TOPIC} 2>&1 \

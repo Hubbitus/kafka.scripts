@@ -8,5 +8,5 @@ source "$(dirname $0)/.config.sh"
 
 : ${KAFKA_BOOTSTRAP_SERVERS?"Not enough vars set: KAFKA_BOOTSTRAP_SERVERS required"}
 
-docker exec -it $(kafka_exec_cache) kafka-topics --bootstrap-server "${KAFKA_BOOTSTRAP_SERVERS}" \
+podman exec -it $(kafka_exec_cache) kafka-topics --bootstrap-server "${KAFKA_BOOTSTRAP_SERVERS}" \
 		--delete --topic "${TOPIC}" 2>&1

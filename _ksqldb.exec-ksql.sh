@@ -7,7 +7,7 @@ source "$(dirname $0)/.config.sh"
 : ${KSQL?"Not enough vars set: KSQL required. Example: KSQL='SHOW STREAMS' $0"}
 
 # By: https://docs.ksqldb.io/en/latest/tutorials/examples/#run-ksqldb-statements-from-the-command-line
-# Docker does not work with master server
+# podman does not work with master server
 #podman run --network host --name ksqldb-cli -it --rm docker.io/confluentinc/ksqldb-cli:0.13.0
 
 /home/pasha/@Projects/@Experiments/ksqlDB/confluent/ksql/bin/ksql ${KSQLDB_SERVER} --execute "${KSQL};"
