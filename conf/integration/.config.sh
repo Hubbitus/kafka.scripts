@@ -1,1 +1,1 @@
-.config.sh.keytab
+.config.sh.keytab-based

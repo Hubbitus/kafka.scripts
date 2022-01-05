@@ -1,0 +1,46 @@
+#!/usr/bin/bash
+
+set -e
+
+source $(dirname $0)/.config.sh
+
+: ${KERBEROS_USER?"Not enough vars set: KERBEROS_USER required"}
+: ${KERBEROS_KEYTAB_FILE?"Not enough vars set: KERBEROS_KEYTAB_FILE required"}
+
+# 3) Use ktutil method (WORK)
+# https://stackoverflow.com/questions/8144596/kerberos-kinit-enter-password-without-prompt/8282084#8282084
+# Many usefull examples how to create keytab files
+# Utilities msktutil, ktutil
+
+#$ ktutil
+#ktutil:  addent -password -p Pavel_Alexeev@PETERSBURG.EPAM.COM -k 1 -e rc4-hmac
+#Password for Pavel_Alexeev@PETERSBURG.EPAM.COM:
+#ktutil:  addent -password -p Pavel_Alexeev@PETERSBURG.EPAM.COM -k 1 -e aes256-cts
+#Password for Pavel_Alexeev@PETERSBURG.EPAM.COM:
+#ktutil:  write_kt Pavel_Alexeev@PETERSBURG.EPAM.COM.keytab
+#ktutil:  quit
+#[pasha@hubbitus kerberos]$ kinit -kt Pavel_Alexeev@PETERSBURG.EPAM.COM.keytab Pavel_Alexeev@PETERSBURG.EPAM.COM
+#[pasha@hubbitus kerberos]$ klist
+#Credentials cache: FILE:/tmp/krb5cc_1000
+#Principal: Pavel_Alexeev@PETERSBURG.EPAM.COM
+#
+#Issued                Expires               Principal
+#Mar 16 02:08:08 2021  Mar 16 12:08:08 2021  krbtgt/PETERSBURG.EPAM.COM@PETERSBURG.EPAM.COM
+
+# AUTOMATE THAT (https://stackoverflow.com/questions/37454308/script-kerberos-ktutil-to-make-keytabs):
+
+if [[ 'x' != "${KERBEROS_PASS_FILE:=x}" ]]; then
+	pass="$(cat ${KERBEROS_PASS_FILE})"
+else
+	read -sp "Enter password for the account [${KERBEROS_USER}] (will not be echoed): " pass
+	echo
+fi
+
+rm -vf ${KERBEROS_USER}.keytab
+
+printf "%b" "addent -password -p ${KERBEROS_USER} -k 1 -e rc4-hmac\n$pass\naddent -password -p ${KERBEROS_USER} -k 1 -e aes256-cts\n$pass\nwrite_kt ${KERBEROS_KEYTAB_FILE}" | ktutil
+
+# To check you may run next commands:
+echo 'Check auth with generated keytab:'
+kinit -kt "${KERBEROS_KEYTAB_FILE}" ${KERBEROS_USER}
+echo "Status: $?"

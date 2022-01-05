@@ -1,0 +1,44 @@
+#!/usr/bin/bash
+
+#set -x
+
+[ "$0" = "$BASH_SOURCE" ] && echo 'Config file must be sourced!' && exit 1
+
+set -ueo pipefail
+
+: ${KAFKA_BOOTSTRAP_SERVERS:=kafka-int.epm-eco.projects.epam.com:9095}
+
+: ${SCHEMA_REGISTRY:=schema-registry-int.epm-eco.projects.epam.com:8081}
+
+# -J for JSON. Or you may provide format as you wish
+: ${KAFKACAT_CONSOME_TOPIC_FORMAT:=-J}
+#: ${KAFKACAT_CONSOME_TOPIC_FORMAT:='-f --\nKey (%K bytes): %k\t\nValue (%S bytes): %s\n\Partition: %p\tOffset: %o\nHeaders: %h\n'}
+
+
+_conf_dir=$(dirname $(realpath "$BASH_SOURCE"))
+
+# @TODO now mixed parameters for different containers. Volumes for the kafkacat and HEAP options for the confluent kafka utils. That work now because is not contraversional, but looks bad
+CONTAINER_CACHE_EXTRA_OPTIONS=("-v${_conf_dir}:/conf" "-v${_conf_dir}/krb5.conf:/etc/krb5.conf" '--env=KAFKA_HEAP_OPTS=-Xmx1024M')
+
+: ${KERBEROS_USER:='Pavel_Alexeev@PETERSBURG.EPAM.COM'}
+: ${KERBEROS_PASS_FILE:="${_conf_dir}/paswd"}
+: ${KERBEROS_KEYTAB_FILE:="${_conf_dir}/${KERBEROS_USER}.keytab"}
+
+# In command below we mount /conf for holds certificates and keystores.
+# provided in sasl.kerberos.kinit.cmd line. Please be careful and NEVER commit sensitive information into git!!!
+# '-Xsasl.kerberos.kinit.cmd=/usr/bin/kinit --password-file=/conf/paswd Pavel_Alexeev@PETERSBURG.EPAM.COM'
+# You may obtain keytab file like (by https://stackoverflow.com/questions/8144596/kerberos-kinit-enter-password-without-prompt/8282084#8282084, https://stackoverflow.com/questions/37454308/script-kerberos-ktutil-to-make-keytabs):
+# See script keytab.regenerate for that!
+KAFKACAT_SECURE_OPTIONS=(
+	'-Xssl.ca.location=/conf/epm-eco-int.ca.crt'
+	'-Xsecurity.protocol=SASL_SSL'
+	'-Xsasl.mechanisms=GSSAPI'
+	'-Xsasl.kerberos.principal=kafkaclient'
+	"-Xsasl.kerberos.kinit.cmd=/usr/bin/kinit -kt /conf/${KERBEROS_USER}.keytab ${KERBEROS_USER}"
+)
+
+: ${KAFKA_CONNECT_HOST:=localhost:8083}
+
+: ${KSQLDB_SERVER:=http://localhost:8088}
+
+source "$(dirname $0)/.shared.sh"
