@@ -11,3 +11,6 @@ paswd
 # Private certificates:
 *.crt
 *.keytab
+
+# Just speedup symlinks:
+/.config.sh~

@@ -12,7 +12,7 @@ set -ueo pipefail
 
 # -J for JSON. Or you may provide format as you wish
 : ${KAFKACAT_CONSOME_TOPIC_FORMAT:=-J}
-#: ${KAFKACAT_CONSOME_TOPIC_FORMAT:='-f --\nKey (%K bytes): %k\t\nValue (%S bytes): %s\n\Partition: %p\tOffset: %o\nHeaders: %h\n'}
+#: ${KAFKACAT_CONSOME_TOPIC_FORMAT:='-f --\nKey (%K bytes): %k\nValue (%S bytes): %s\n\Partition: %p\tOffset: %o\nHeaders: %h\n'}
 
 
 _conf_dir=$(dirname $(realpath "$BASH_SOURCE"))
