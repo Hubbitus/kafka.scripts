@@ -1,1 +1,1 @@
-conf/integration/.config.sh
+.config.sh.SANDBOX
