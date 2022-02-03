@@ -11,8 +11,15 @@ source "$(dirname $0)/.config.sh"
 TOPIC=topic1 $0 -Oe -o-10 -c10
 See also _kafkacat.consume-topic.lastN.sh script for simplicity"}
 
-source "$(dirname $0)/_kafkacat.sh" \
-	-C -t ${TOPIC} \
-	-u \
-	"${KAFKACAT_CONSOME_TOPIC_FORMAT}" \
-		"$@"
+if [[ "${KAFKACAT_CONSOME_TOPIC_FORMAT}" ]]; then
+	source "$(dirname $0)/_kafkacat.sh" \
+		-C -t ${TOPIC} \
+		-u \
+		"${KAFKACAT_CONSOME_TOPIC_FORMAT}" \
+			"$@"
+else
+	source "$(dirname $0)/_kafkacat.sh" \
+		-C -t ${TOPIC} \
+		-u \
+			"$@"
+fi

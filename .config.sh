@@ -1,1 +1,1 @@
-.config.sh.SANDBOX
+.config.sh.PROD
