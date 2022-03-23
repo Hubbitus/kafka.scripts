@@ -1,1 +1,1 @@
-.config.sh.PROD
+.config.sh.SBOX

@@ -20,6 +20,7 @@ set -ueo pipefail
 
 _conf_dir=$(dirname $(realpath "$BASH_SOURCE"))
 
+KAFKACAT_EXEC_CACHE_NAME='kafkacat-exec-cache-SBOX'
 CONTAINER_CACHE_EXTRA_OPTIONS=()
 # In command below we mount /conf for holds certificates and keystores. Paswd file allso must contain password for kerberos account,
 # provided in sasl.kerberos.kinit.cmd line. Please be careful and NEVER commit sensitive information into git!!!

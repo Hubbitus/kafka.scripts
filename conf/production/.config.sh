@@ -18,6 +18,7 @@ set -ueo pipefail
 
 _conf_dir=$(dirname $(realpath "$BASH_SOURCE"))
 
+KAFKACAT_EXEC_CACHE_NAME='kafkacat-exec-cache-PROD'
 CONTAINER_CACHE_EXTRA_OPTIONS=("-v${_conf_dir}:/conf" "-v${_conf_dir}/krb5.conf:/etc/krb5.conf")
 
 # In command below we mount /conf for holds certificates and keystores. Paswd file allso must contain password for kerberos account,

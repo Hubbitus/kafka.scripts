@@ -1,1 +1,1 @@
-.config.sh.keytab-based
+.config.sh.WORK.paswd

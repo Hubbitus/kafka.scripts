@@ -17,6 +17,8 @@ set -ueo pipefail
 
 _conf_dir=$(dirname $(realpath "$BASH_SOURCE"))
 
+KAFKACAT_EXEC_CACHE_NAME='kafkacat-exec-cache-INT'
+
 # @TODO now mixed parameters for different containers. Volumes for the kafkacat and HEAP options for the confluent kafka utils. That work now because is not contraversional, but looks bad
 CONTAINER_CACHE_EXTRA_OPTIONS=("-v${_conf_dir}:/conf" "-v${_conf_dir}/krb5.conf:/etc/krb5.conf" '--env=KAFKA_HEAP_OPTS=-Xmx1024M')
 

@@ -22,10 +22,7 @@ function kafka_exec_cache(){
 	container_exec_cache kafka-exec-cache docker.io/confluentinc/cp-kafka:5.5.1
 }
 function kafkacat_exec_cache(){
-#	container_exec_cache kafkacat-exec-cache docker.io/confluentinc/cp-kafkacat:5.5.1
-#	container_exec_cache kafkacat-exec-cache docker.io/edenhill/kafkacat:1.6.0
-#	container_exec_cache kafkacat-exec-cache docker.io/hubbitus/kafkacat-sasl:8916a0956
-	container_exec_cache kafkacat-exec-cache docker.io/hubbitus/kafkacat-sasl:20210622
+	container_exec_cache ${KAFKACAT_EXEC_CACHE_NAME-'kafkacat-exec-cache'} docker.io/hubbitus/kafkacat-sasl:20210622
 }
 
 function kafkactl_exec_cache(){
