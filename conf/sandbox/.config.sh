@@ -31,5 +31,3 @@ KAFKACAT_SECURE_OPTIONS=()
 : ${KAFKA_CONNECT_HOST:=localhost:8083}
 #: ${KSQLDB_SERVER:=http://localhost:8088}
 : ${KSQLDB_SERVER:=http://ksqldb-2-epm-ssdl-ksqldb.by.paas.epam.com}
-
-source "$(dirname $0)/.shared.sh"

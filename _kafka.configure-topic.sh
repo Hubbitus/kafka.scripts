@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source "$(dirname $0)/.config.sh"
+source "$(dirname $0)/.shared.sh"
 
 : ${TOPIC?"Not enough vars set: TOPIC required. E.g.: 'TOPIC=uat-scoring CONFIG="cleanup.policy=compact" ./$(basename $0)'"}
 : ${CONFIG?"Not enough vars set: CONFIG required. E.g.: 'TOPIC=uat-scoring CONFIG="retention.ms=10000" ./$(basename $0)'"}

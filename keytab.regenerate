@@ -2,7 +2,7 @@
 
 set -e
 
-source $(dirname $0)/.config.sh
+source $(dirname $0)/.shared.sh
 
 : ${KERBEROS_USER?"Not enough vars set: KERBEROS_USER required"}
 : ${KERBEROS_KEYTAB_FILE?"Not enough vars set: KERBEROS_KEYTAB_FILE required"}

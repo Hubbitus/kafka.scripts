@@ -1,4 +1,6 @@
 
+source "$(dirname $0)/.config.sh${ENV-}"
+
 # Exec much faster than run container each time. Container will be run and active 1h automatically
 # $1 - name of contaiiner
 # $2 - image

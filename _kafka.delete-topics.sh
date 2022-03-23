@@ -3,7 +3,7 @@
 # Delete multiple kafka topics.
 # For filtering you may provide optional variable KAFKA_TOPICS_FILTER
 # See ./_kafka.list-topics.sh script description and examples
-source $(dirname $0)/.config.sh
+source $(dirname $0)/.shared.sh
 
 i=0
 
