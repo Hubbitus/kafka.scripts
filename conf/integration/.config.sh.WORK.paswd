@@ -8,7 +8,7 @@ set -ueo pipefail
 
 : ${KAFKA_BOOTSTRAP_SERVERS:=kafka-int.epm-eco.projects.epam.com:9095}
 
-: ${SCHEMA_REGISTRY:=schema-registry-int.epm-eco.projects.epam.com:8081}
+: ${SCHEMA_REGISTRY:=http://schema-registry-int.epm-eco.projects.epam.com:8081}
 
 # -J for JSON. Or you may provide format as you wish
 : ${KAFKACAT_CONSOME_TOPIC_FORMAT:=-J}
@@ -20,7 +20,7 @@ _conf_dir=$(dirname $(realpath "$BASH_SOURCE"))
 KAFKACAT_EXEC_CACHE_NAME='kafkacat-exec-cache-INT'
 
 # @TODO now mixed parameters for different containers. Volumes for the kafkacat and HEAP options for the confluent kafka utils. That work now because is not contraversional, but looks bad
-CONTAINER_CACHE_EXTRA_OPTIONS=("-v${_conf_dir}:/conf" "-v${_conf_dir}/krb5.conf:/etc/krb5.conf" '--env=KAFKA_HEAP_OPTS=-Xmx1024M')
+CONTAINER_CACHE_EXTRA_OPTIONS=('-v.:/host' "-v${_conf_dir}:/conf" "-v${_conf_dir}/krb5.conf:/etc/krb5.conf" '--env=KAFKA_HEAP_OPTS=-Xmx1024M')
 
 # In command below we mount /conf for holds certificates and keystores. Paswd file allso must contain password for kerberos account,
 # provided in sasl.kerberos.kinit.cmd line. Please be careful and NEVER commit sensitive information into git!!!
