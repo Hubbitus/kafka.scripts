@@ -34,3 +34,5 @@ KAFKACAT_SECURE_OPTIONS=(
 : ${KAFKA_CONNECT_HOST:=localhost:8083}
 
 : ${KSQLDB_SERVER:=http://localhost:8088}
+
+CONSUMER_GROUP_ID=epm-ddo.consumer.$(hostname).$(date --iso-8601=s)

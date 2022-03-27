@@ -26,7 +26,7 @@ CONTAINER_CACHE_EXTRA_OPTIONS=('-v.:/host')
 # provided in sasl.kerberos.kinit.cmd line. Please be careful and NEVER commit sensitive information into git!!!
 KAFKACAT_SECURE_OPTIONS=()
 
-
+CONSUMER_GROUP_ID=epm-ddo.consumer.$(hostname).$(date --iso-8601=s)
 
 : ${KAFKA_CONNECT_HOST:=localhost:8083}
 #: ${KSQLDB_SERVER:=http://localhost:8088}
