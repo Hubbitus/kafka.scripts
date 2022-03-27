@@ -129,8 +129,8 @@ shopt -s lastpipe
 # 2 JQ in pipe to work with formated JSON files too
 jq . "${PAYLOAD_JSON_FILE}" | jq -c | while read RECORD; do
 	echo "PROCESS: $( echo "${RECORD}" | jq '{ topic: .topic, key: .key, offset: .offset, tstype: .tstype, ts: .ts, ts__time: ( if .ts then .ts / 1000 | strftime("%Y-%m-%dT%H:%M:%S %Z") else null end ), value_schema_id: .value_schema_id }' )"
-	# @TODO naive approach, we parse only 1 value for the header. Potentially that may ba array
-	_HEADERS=$(echo "$RECORD" | jq '.headers | to_entries | map( "-H " + .key + "=\"" + .value[0] + "\"") | join(" ")' -r) #'
+	# @TODO naive approach, we parse only 1 value for the header. Potentially that may be array
+	_HEADERS=$(echo "$RECORD" | jq '.headers | to_entries | map("-H " + .key + "=\"" + .value[0] + "\"") | join(" ")' -r) #'
 	echo "Headers will be used: ${_HEADERS}"
 	_key_record=$(echo "$RECORD" | jq -r .key)
 	_key=${KEY-${_key_record}}
