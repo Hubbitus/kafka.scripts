@@ -65,20 +65,20 @@ trap 'cleanup' EXIT INT
 # @param $TOPIC used
 # @param $SCHEMA_REGISTRY used
 function publishSchema(){
-	ID=$(curl -s -X POST -H "Content-Type: application/json" --data "$(jq '{schema: (. | tojson)}' ${1})" http://${SCHEMA_REGISTRY}/subjects/${TOPIC}/versions | jq .id) # '
-	echo "Schema registered with id: $ID" > /dev/stderr
+	ID=$(curl -sS -X POST -H "Content-Type: application/json" --data "$(jq '{schema: (. | tojson)}' ${1})" ${SCHEMA_REGISTRY}/subjects/${TOPIC}/versions | jq .id) # '
+	echo "Schema registered with id: $ID. URL: ${SCHEMA_REGISTRY}/schemas/ids/${ID}" > /dev/stderr
 }
 
 # @param $1 - URL to download from
 # @used _AVRO_SCHEMA_FILE variable and there placed schema
-# @used ID - set to id of downloaded scheme
+# @used _ID - set to id of downloaded scheme
 function downloadSchema(){
 	local _url="$1"
 	_AVRO_SCHEMA_FILE="$(mktemp "${_TMP_DIR}"/schema_XXXXX.avsc)"
-	_RESP=$(curl -s ${_url})
+	_RESP=$(curl -sS ${_url})
 	echo "${_RESP}" | jq '.schema | fromjson' > "${_AVRO_SCHEMA_FILE}"
 	# Important for the `latest` schemas
-	local _id=$(echo "${_RESP}" | jq .id)
+	_ID=$(echo "${_RESP}" | jq .id)
 }
 
 if [[ "${AVRO_SCHEMA_FILE-}" ]]; then
@@ -86,9 +86,11 @@ if [[ "${AVRO_SCHEMA_FILE-}" ]]; then
 fi
 
 if [[ "${AVRO_SCHEMA_URL-}" ]]; then
-	ID=$(downloadSchema "${AVRO_SCHEMA_URL}")
+	downloadSchema "${AVRO_SCHEMA_URL}"
 	if [[ $AVRO_SCHEMA_URL != $SCHEMA_REGISTRY* ]]; then # $AVRO_SCHEMA_URL !startsWith $SCHEMA_REGISTRY
 		publishSchema "${_AVRO_SCHEMA_FILE}"
+	else # @TODO
+		ID=${_ID}
 	fi
 fi
 
@@ -119,16 +121,17 @@ function encodeMessageToAVRO(){
 	# !WARNING! kcat incorrectly work with namespaces! So, adjustments may be needed! See my bugreport https://github.com/edenhill/kcat/issues/376 and https://stackoverflow.com/questions/49926146/org-apache-avro-avrotypeexception-unknown-union-branch/49939794#49939794
 	# Convert JSON payload into Avro using Avro's own toolage, write only the binary data of Avro to the file
 	# @TODO For now assume single message in the file!
-	java -Dlog4j.configurationFile=/dev/null -jar "${_AVRO_TOOLS_JAR}" jsontofrag --schema-file "${AVRO_SCHEMA_FILE-}${_AVRO_SCHEMA_FILE-}" <( echo "${_record}" | jq '.payload // .' ) >> "${_AVRO_ENCODED_DATA_FILE}" \
-		2>&1 | sed '/Unable to load native-hadoop library for your platform/d'
+	java -jar "${_AVRO_TOOLS_JAR}" jsontofrag --schema-file "${AVRO_SCHEMA_FILE-}${_AVRO_SCHEMA_FILE-}" <( echo "${_record}" ) \
+		2> >(sed '/Unable to load native-hadoop library for your platform/d') \
+		1>> "${_AVRO_ENCODED_DATA_FILE}"
 }
 
 # To get _topic value outside of loop. See http://mywiki.wooledge.org/BashFAQ/024
 shopt -s lastpipe
 
 # 2 JQ in pipe to work with formated JSON files too
-jq . "${PAYLOAD_JSON_FILE}" | jq -c | while read RECORD; do
-	echo "PROCESS: $( echo "${RECORD}" | jq '{ topic: .topic, key: .key, offset: .offset, tstype: .tstype, ts: .ts, ts__time: ( if .ts then .ts / 1000 | strftime("%Y-%m-%dT%H:%M:%S %Z") else null end ), value_schema_id: .value_schema_id }' )"
+jq . "${PAYLOAD_JSON_FILE}" | jq -c | while read -r RECORD; do
+	echo "PROCESS: $( echo "${RECORD}" | jq '{ topic: .topic, key: .key, offset: .offset, tstype: .tstype, ts: .ts, ts__time__: ( if .ts then .ts / 1000 | strftime("%Y-%m-%dT%H:%M:%S %Z") else null end ), value_schema_id: .value_schema_id }' )"
 	# @TODO naive approach, we parse only 1 value for the header. Potentially that may be array
 	_HEADERS=$(echo "$RECORD" | jq '.headers | to_entries | map("-H " + .key + "=\"" + .value[0] + "\"") | join(" ")' -r) #'
 	echo "Headers will be used: ${_HEADERS}"
@@ -138,7 +141,7 @@ jq . "${PAYLOAD_JSON_FILE}" | jq -c | while read RECORD; do
 	_topic=${TOPIC-${_topic_record}}
 	echo "KEY: ENV variable provided=${KEY-}, record.key=${_key_record}, will be used value: ${_key}"
 	echo "TOPIC: ENV variable provided=${TOPIC-}, record.key=${_topic_record}, will be used value: ${_topic}"
-	encodeMessageToAVRO "${RECORD}"
+	encodeMessageToAVRO "$(echo "${RECORD}" | jq '.payload // .')"
 	# NOTE, we use file in container! So, expected parameter CONTAINER_CACHE_EXTRA_OPTIONS=('-v.:/host')!
 	# @TODO that is not work with stdin redirection and sourcing unfortunately!
 	podman exec $(kafkacat_exec_cache) kafkacat \
