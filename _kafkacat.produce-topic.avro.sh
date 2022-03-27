@@ -129,9 +129,13 @@ function encodeMessageToAVRO(){
 # To get _topic value outside of loop. See http://mywiki.wooledge.org/BashFAQ/024
 shopt -s lastpipe
 
-# 2 JQ in pipe to work with formated JSON files too
+_records_count=$(jq --slurp length "${PAYLOAD_JSON_FILE}")
+_i=0
+# 2 JQ in pipe to work with formated JSON files too!
 jq . "${PAYLOAD_JSON_FILE}" | jq -c | while read -r RECORD; do
-	echo "PROCESS: $( echo "${RECORD}" | jq '{ topic: .topic, key: .key, offset: .offset, tstype: .tstype, ts: .ts, ts__time__: ( if .ts then .ts / 1000 | strftime("%Y-%m-%dT%H:%M:%S %Z") else null end ), value_schema_id: .value_schema_id }' )"
+	((++_i))
+	echo '####################################################################'
+	echo -e "\e[1;49;34mPROCESS RECORD\e[0m: (${_i}/${_records_count}): $( echo "${RECORD}" | jq '{ topic: .topic, key: .key, offset: .offset, tstype: .tstype, ts: .ts, ts__time__: ( if .ts then .ts / 1000 | strftime("%Y-%m-%dT%H:%M:%S %Z") else null end ), value_schema_id: .value_schema_id }' )"
 	# @TODO naive approach, we parse only 1 value for the header. Potentially that may be array
 	_HEADERS=$(echo "$RECORD" | jq '.headers | to_entries | map("-H " + .key + "=\"" + .value[0] + "\"") | join(" ")' -r) #'
 	echo "Headers will be used: ${_HEADERS}"
@@ -148,7 +152,7 @@ jq . "${PAYLOAD_JSON_FILE}" | jq -c | while read -r RECORD; do
 		-b "${KAFKA_BOOTSTRAP_SERVERS}" "${KAFKACAT_SECURE_OPTIONS[@]}" -m30 \
 			-P -e -t ${_topic} -k ${_key} ${_HEADERS} /host/${_AVRO_ENCODED_DATA_FILE}
 
-	echo '   ...SENT!'
+	echo -e '\t\e[0;49;92m...SENT!\e[0m'
 	#source "$(dirname $0)/_kafkacat.sh" \
 	#	-P -e -t ${TOPIC} -k 'test-key-1' \
 	#		"$@" \
