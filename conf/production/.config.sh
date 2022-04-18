@@ -2,26 +2,27 @@
 
 #set -x
 
-[ "$0" = "$BASH_SOURCE" ] && echo 'Config file must be sourced!' && exit 1
+[ "$0" = "${BASH_SOURCE[0]}" ] && echo 'Config file must be sourced!' && exit 1
 
-set -ueo pipefail
+ENV=PROD
 
 : ${KAFKA_BOOTSTRAP_SERVERS:=kafka.epm-eco.projects.epam.com:9095}
 
 : ${SCHEMA_REGISTRY:=http://schema-registry.epm-eco.projects.epam.com:8081}
 
 # -J for JSON. Or you may provide format as you wish
-: ${KAFKACAT_CONSOME_TOPIC_FORMAT=-J}
-#: ${KAFKACAT_CONSOME_TOPIC_FORMAT='-f --\nKey (%K bytes): %k\nValue (%S bytes): %s\n\Partition: %p\tOffset: %o\nHeaders: %h\n'}
+: ${KAFKACAT_CONSUME_TOPIC_FORMAT=-J}
+#: ${KAFKACAT_CONSUME_TOPIC_FORMAT='-f --\nKey (%K bytes): %k\nValue (%S bytes): %s\n\Partition: %p\tOffset: %o\nHeaders: %h\n'}
 # Without value itself:
-#: ${KAFKACAT_CONSOME_TOPIC_FORMAT='-f --\nKey (%K bytes): %k\t\nValue %S bytes\n\Partition: %p\tOffset: %o\nHeaders: %h\n'}
+#: ${KAFKACAT_CONSUME_TOPIC_FORMAT='-f --\nKey (%K bytes): %k\t\nValue %S bytes\n\Partition: %p\tOffset: %o\nHeaders: %h\n'}
 
-_conf_dir=$(dirname $(realpath "$BASH_SOURCE"))
+_conf_dir=$(dirname "$(realpath "${BASH_SOURCE[0]}")")
 
-KAFKACAT_EXEC_CACHE_NAME='kafkacat-exec-cache-PROD'
-CONTAINER_CACHE_EXTRA_OPTIONS=('-v.:/host' "-v${_conf_dir}:/conf" "-v${_conf_dir}/krb5.conf:/etc/krb5.conf")
+CONTAINER_CACHE_EXTRA_OPTIONS_kafkacat=('-v.:/host' "-v${_conf_dir}:/conf:Z,ro" "-v${_conf_dir}/krb5.conf:/etc/krb5.conf:Z,ro")
+# Note! For Kerberos auth you need also configure
+CONTAINER_CACHE_EXTRA_OPTIONS_confluent=('--network=host' '-v.:/host' "-v${_conf_dir}:/conf:Z,ro" "-v${_conf_dir}/krb5.conf:/etc/krb5.conf:Z,ro" '--env=KAFKA_HEAP_OPTS=-Xmx4096M' '--env=KAFKA_OPTS=-Djava.security.auth.login.config=/conf/jaas.conf -Djava.security.krb5.conf=/etc/krb5.conf')
 
-# In command below we mount /conf for holds certificates and keystores. Paswd file allso must contain password for kerberos account,
+# In command below we mount /conf for holds certificates and keystores. File paswd also must contain password for kerberos account,
 # provided in sasl.kerberos.kinit.cmd line. Please be careful and NEVER commit sensitive information into git!!!
 KAFKACAT_SECURE_OPTIONS=(
 	'-Xssl.ca.location=/conf/epm-eco-prod.ca.crt'

@@ -131,7 +131,7 @@ shopt -s lastpipe
 
 _records_count=$(jq --slurp length "${PAYLOAD_JSON_FILE}")
 _i=0
-# 2 JQ in pipe to work with formated JSON files too!
+# 2 JQ in pipe to work with formatted JSON files too!
 jq . "${PAYLOAD_JSON_FILE}" | jq -c | while read -r RECORD; do
 	((++_i))
 	echo '####################################################################'
@@ -146,7 +146,7 @@ jq . "${PAYLOAD_JSON_FILE}" | jq -c | while read -r RECORD; do
 	echo "KEY: ENV variable provided=${KEY-}, record.key=${_key_record}, will be used value: ${_key}"
 	echo "TOPIC: ENV variable provided=${TOPIC-}, record.key=${_topic_record}, will be used value: ${_topic}"
 	encodeMessageToAVRO "$(echo "${RECORD}" | jq '.payload // .')"
-	# NOTE, we use file in container! So, expected parameter CONTAINER_CACHE_EXTRA_OPTIONS=('-v.:/host')!
+	# NOTE, we use file in container! So, expected parameter CONTAINER_CACHE_EXTRA_OPTIONS_kafkacat=('-v.:/host')!
 	# @TODO that is not work with stdin redirection and sourcing unfortunately!
 	podman exec $(kafkacat_exec_cache) kafkacat \
 		-b "${KAFKA_BOOTSTRAP_SERVERS}" "${KAFKACAT_SECURE_OPTIONS[@]}" -m30 \
@@ -158,11 +158,3 @@ jq . "${PAYLOAD_JSON_FILE}" | jq -c | while read -r RECORD; do
 	#		"$@" \
 	#			< data_file
 done
-
-
-exit
-sleep 2
-echo '#######################################################'
-echo '######## DEBUG read back topic (AVRO), last 2: ########'
-echo '#######################################################'
-ENV=SBOX TOPIC=${_topic} ./_kafkacat.consume-topic.avro.sh -o-2 -e

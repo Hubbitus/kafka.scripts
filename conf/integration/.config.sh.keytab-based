@@ -11,14 +11,14 @@ set -ueo pipefail
 : ${SCHEMA_REGISTRY:=schema-registry-int.epm-eco.projects.epam.com:8081}
 
 # -J for JSON. Or you may provide format as you wish
-: ${KAFKACAT_CONSOME_TOPIC_FORMAT=-J}
-#: ${KAFKACAT_CONSOME_TOPIC_FORMAT='-f --\nKey (%K bytes): %k\t\nValue (%S bytes): %s\n\Partition: %p\tOffset: %o\nHeaders: %h\n'}
+: ${KAFKACAT_CONSUME_TOPIC_FORMAT=-J}
+#: ${KAFKACAT_CONSUME_TOPIC_FORMAT='-f --\nKey (%K bytes): %k\t\nValue (%S bytes): %s\n\Partition: %p\tOffset: %o\nHeaders: %h\n'}
 
 
 _conf_dir=$(dirname $(realpath "$BASH_SOURCE"))
 
 # @TODO now mixed parameters for different containers. Volumes for the kafkacat and HEAP options for the confluent kafka utils. That work now because is not contraversional, but looks bad
-CONTAINER_CACHE_EXTRA_OPTIONS=("-v${_conf_dir}:/conf" "-v${_conf_dir}/krb5.conf:/etc/krb5.conf" '--env=KAFKA_HEAP_OPTS=-Xmx1024M')
+CONTAINER_CACHE_EXTRA_OPTIONS_kafkacat=("-v${_conf_dir}:/conf" "-v${_conf_dir}/krb5.conf:/etc/krb5.conf" '--env=KAFKA_HEAP_OPTS=-Xmx1024M')
 
 : ${KERBEROS_USER:='Pavel_Alexeev@PETERSBURG.EPAM.COM'}
 : ${KERBEROS_PASS_FILE="${_conf_dir}/paswd"}

@@ -1,8 +1,8 @@
 #!/usr/bin/bash
 
-set -e
+set -eo pipefail
 
-source $(dirname $0)/.shared.sh
+source "$(dirname "$0")/.shared.sh"
 
 : ${KERBEROS_USER?"Not enough vars set: KERBEROS_USER required"}
 : ${KERBEROS_KEYTAB_FILE?"Not enough vars set: KERBEROS_KEYTAB_FILE required"}
@@ -29,6 +29,8 @@ source $(dirname $0)/.shared.sh
 
 # AUTOMATE THAT (https://stackoverflow.com/questions/37454308/script-kerberos-ktutil-to-make-keytabs):
 
+rm -vf ${KERBEROS_KEYTAB_FILE}
+
 if [[ 'x' != "${KERBEROS_PASS_FILE:-x}" ]]; then
 	pass="$(cat ${KERBEROS_PASS_FILE})"
 else
@@ -36,9 +38,12 @@ else
 	echo
 fi
 
-rm -vf ${KERBEROS_USER}.keytab
-
 printf "%b" "addent -password -p ${KERBEROS_USER} -k 1 -e rc4-hmac\n$pass\naddent -password -p ${KERBEROS_USER} -k 1 -e aes256-cts\n$pass\nwrite_kt ${KERBEROS_KEYTAB_FILE}" | ktutil
+# Tests:
+#printf "%b" "addent -password -p ${KERBEROS_USER} -k 1 -e camellia256-cts-cmac\n$pass\naddent -password -p ${KERBEROS_USER} -k 1 -e aes256-cts\n$pass\nwrite_kt ${KERBEROS_KEYTAB_FILE}" | ktutil
+
+echo "List keys in the generated keytab [${KERBEROS_KEYTAB_FILE}]:"
+klist -kte ${KERBEROS_KEYTAB_FILE}
 
 # To check you may run next commands:
 echo 'Check auth with generated keytab:'

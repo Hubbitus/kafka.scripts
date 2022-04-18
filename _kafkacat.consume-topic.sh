@@ -22,9 +22,9 @@ exit 1
 : ${KAFKA_BOOTSTRAP_SERVERS?"Not enough vars set: KAFKA_BOOTSTRAP_SERVERS required"}
 [[ ! ${TOPIC-} && !( ${TOPICS} && ${CONSUMER_GROUP_ID} ) ]] && echo 'Not enough vars set: TOPIC or pair TOPICS+CONSUMER_GROUP_ID variables must be provided.' && usage
 
-if [[ "${KAFKACAT_CONSOME_TOPIC_FORMAT}" ]]; then
+if [[ "${KAFKACAT_CONSUME_TOPIC_FORMAT}" ]]; then
 	source "$(dirname $0)/_kafkacat.sh" \
-		"${KAFKACAT_CONSOME_TOPIC_FORMAT}" \
+		"${KAFKACAT_CONSUME_TOPIC_FORMAT}" \
 		-u "$@" \
 		${TOPIC+-C -t ${TOPIC}} ${TOPICS+-G ${CONSUMER_GROUP_ID} ${TOPICS}}
 else
