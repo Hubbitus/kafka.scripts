@@ -4,6 +4,9 @@
 
 ENV=SBOX
 
+: ${KERBEROS_USER:=Pavel_Alexeev@PETERSBURG.EPAM.COM}
+: ${KERBEROS_KEYTAB_FILE:="conf/${ENV}/${KERBEROS_USER}.keytab"}
+
 #: ${KAFKA_BOOTSTRAP_SERVERS:=PLAINTEXT://ecsc00a060af.epam.com:9092,PLAINTEXT://ecsc00a060b0.epam.com:9092,PLAINTEXT://ecsc00a060b1.epam.com:9092,PLAINTEXT://ecsc00a060b2.epam.com:9092,PLAINTEXT://ecsc00a060b3.epam.com:9092}
 : ${KAFKA_BOOTSTRAP_SERVERS:=PLAINTEXT://kafka-sbox.epm-eco.projects.epam.com:9092}
 
