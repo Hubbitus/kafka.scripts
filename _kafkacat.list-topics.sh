@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-# Script  to list present kafka topics.
+# Script to list present kafka topics.
 # Unlike _kafka.list-topics.sh will show also partitions
 
 source "$(dirname $0)/.shared.sh"

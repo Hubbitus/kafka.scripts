@@ -8,9 +8,14 @@ Just create [.config.sh](.config.sh) file by example with said [.config-sandbox.
 
 And then just call any script like:
 
-	./_kafka.list-topics.sh
+	./_kafkacat.list-topics.sh
 
 It will work with values from config, or provide details what needs to be provided additionally.
+
+For easy use different environments you may just follow configuration files naming conventions, described below and call it like:
+
+   ENV=PROD ./_kafkacat.list-topics.sh
+   ENV=SBOX ./_kafkacat.list-topics.sh
 
 ## Configuration
 
