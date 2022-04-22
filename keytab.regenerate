@@ -7,6 +7,9 @@ source "$(dirname "$0")/.shared.sh"
 : ${KERBEROS_USER?"Not enough vars set: KERBEROS_USER required"}
 : ${KERBEROS_KEYTAB_FILE?"Not enough vars set: KERBEROS_KEYTAB_FILE required"}
 
+# Should we test generated file on host also? Tested if string 'true' provided. Otherwise that is tested only in the container wheere that was generated!
+: ${KERBEROS_KEYTAB_GEN_TEST_ON_HOST:=false}
+
 # 3) Use ktutil method (WORK)
 # https://stackoverflow.com/questions/8144596/kerberos-kinit-enter-password-without-prompt/8282084#8282084
 # Many usefull examples how to create keytab files
@@ -38,14 +41,36 @@ else
 	echo
 fi
 
-printf "%b" "addent -password -p ${KERBEROS_USER} -k 1 -e rc4-hmac\n$pass\naddent -password -p ${KERBEROS_USER} -k 1 -e aes256-cts\n$pass\nwrite_kt ${KERBEROS_KEYTAB_FILE}" | ktutil
-# Tests:
-#printf "%b" "addent -password -p ${KERBEROS_USER} -k 1 -e camellia256-cts-cmac\n$pass\naddent -password -p ${KERBEROS_USER} -k 1 -e aes256-cts\n$pass\nwrite_kt ${KERBEROS_KEYTAB_FILE}" | ktutil
+# KRB5 (MIT) generation variant:
+#printf "%b" "addent -password -p ${KERBEROS_USER} -k 1 -e rc4-hmac\n$pass\naddent -password -p ${KERBEROS_USER} -k 1 -e aes256-cts\n$pass\nwrite_kt ${KERBEROS_KEYTAB_FILE}" | ktutil
 
-echo "List keys in the generated keytab [${KERBEROS_KEYTAB_FILE}]:"
-klist -kte ${KERBEROS_KEYTAB_FILE}
+# Heimdal version:
+#/usr/bin/heimdal-ktutil --keytab=${KERBEROS_KEYTAB_FILE} add -p ${KERBEROS_USER} -w $pass -V 1 -e rc4-hmac
+#/usr/bin/heimdal-ktutil --keytab=${KERBEROS_KEYTAB_FILE} add -p ${KERBEROS_USER} -w $pass -V 1 -e aes256-cts
 
-# To check you may run next commands:
-echo 'Check auth with generated keytab:'
-kinit -kt "${KERBEROS_KEYTAB_FILE}" ${KERBEROS_USER}
-echo "Status: $?"
+# And try with already used in container (/conf mount assumed)
+podman exec $(kafkacat_exec_cache) sh -c "
+set -e
+rm -f /tmp/.keytab
+ktutil --keytab=/tmp/.keytab add -p ${KERBEROS_USER} -w $pass -V 1 -e rc4-hmac
+ktutil --keytab=/tmp/.keytab add -p ${KERBEROS_USER} -w $pass -V 1 -e aes256-cts
+cat /tmp/.keytab
+
+echo 'List keys in the generated keytab [${KERBEROS_KEYTAB_FILE}]:' 1>&2
+ktutil --keytab=/tmp/.keytab list 1>&2
+
+echo 'Check auth with generated keytab:' 1>&2
+kinit -kt /tmp/.keytab ${KERBEROS_USER} 1>&2
+echo 'Status: $?' 1>&2
+" > "${KERBEROS_KEYTAB_FILE}"
+
+if [[ 'true' == "${KERBEROS_KEYTAB_GEN_TEST_ON_HOST}" ]]; then
+	# Similar external checks (e.g. for the KRB5 and heimdal host tools)
+	echo "List keys in the generated keytab [${KERBEROS_KEYTAB_FILE}]:"
+	klist -kte ${KERBEROS_KEYTAB_FILE}
+
+	# To check you may run next commands:
+	echo 'Check auth with generated keytab ON HOST:'
+	kinit -kt "${KERBEROS_KEYTAB_FILE}" ${KERBEROS_USER}
+	echo "Status: $?"
+fi
