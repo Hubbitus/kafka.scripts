@@ -1,5 +1,9 @@
 #!/usr/bin/bash
 
+# Script to generate keytab auth file for the Kerberos authentication (see alternatives and possibilities in the DEADME.md file).
+# Example of run:
+# KERBEROS_KEYTAB_GEN_TEST_ON_HOST=true KERBEROS_USER=Pavel_Alexeev@PETERSBURG.EPAM.COM KERBEROS_PASS_FILE=conf/production/paswd KERBEROS_KEYTAB_FILE=Pavel_Alexeev@PETERSBURG.EPAM.COM.keytab ./keytab.regenerate
+
 set -eo pipefail
 
 source "$(dirname "$0")/.shared.sh"
