@@ -58,7 +58,7 @@ KAFKACAT_SECURE_OPTIONS=(
 	'-Xsasl.mechanisms=GSSAPI'
 	'-Xsasl.kerberos.principal=kafkaclient'
 	"-Xsasl.kerberos.kinit.cmd=/usr/bin/kinit --password-file=/conf/paswd ${KERBEROS_USER}"
-	# OR keytab based variant ():
+	# OR keytab based variant (see script keytab.regenerate for generation):
 #	"-Xsasl.kerberos.kinit.cmd=/usr/bin/kinit -kt /conf/${KERBEROS_USER}.keytab ${KERBEROS_USER}"
 )
 
