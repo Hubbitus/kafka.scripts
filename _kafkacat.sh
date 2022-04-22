@@ -7,8 +7,6 @@ source $(dirname $0)/.shared.sh
 
 : ${KAFKA_BOOTSTRAP_SERVERS?"Not enough vars set: KAFKA_BOOTSTRAP_SERVERS required"}
 
-# It does not work in podman any more! See bugreport: https://github.com/edenhill/kafkacat/issues/284
-#/home/pasha/@Projects/_OPEN/kafkacat/kafkacat \
 # To do that work possibly you need configure resolved (https://fedoramagazine.org/systemd-resolved-introduction-to-split-dns/):
 # sudo resolvectl dns gpd0 10.66.110.11 10.66.110.10
 podman exec -i $(kafkacat_exec_cache) kafkacat \
