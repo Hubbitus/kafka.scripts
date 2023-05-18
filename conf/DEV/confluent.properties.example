@@ -1,0 +1,5 @@
+security.protocol=SSL
+ssl.truststore.location=/conf/truststore.jks
+ssl.truststore.password=********
+ssl.keystore.location=/conf/keystore.jks
+ssl.keystore.password=********

@@ -17,7 +17,7 @@ set -ueo pipefail
 
 _conf_dir=$(dirname $(realpath "$BASH_SOURCE"))
 
-CONTAINER_CACHE_EXTRA_OPTIONS_kafkacat=(	'--network host')
+CONTAINER_CACHE_EXTRA_OPTIONS_kafkacat=('--network host')
 # In command below we mount /conf for holds certificates and keystores. Paswd file allso must contain password for kerberos account,
 # provided in sasl.kerberos.kinit.cmd line. Please be careful and NEVER commit sensitive information into git!!!
 KAFKACAT_SECURE_OPTIONS=()

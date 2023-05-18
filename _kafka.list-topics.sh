@@ -9,9 +9,7 @@ source "$(dirname $0)/.shared.sh"
 
 : ${KAFKA_BOOTSTRAP_SERVERS?"Not enough vars set: KAFKA_BOOTSTRAP_SERVERS required"}
 
-set -x
-
 #KAFKA_HEAP_OPTS="-Xmx2048M" kafka-topics --bootstrap-server "${KAFKA_BOOTSTRAP_SERVERS}" \
-podman exec $(kafka_exec_cache) kafka-topics --bootstrap-server "${KAFKA_BOOTSTRAP_SERVERS}" \
+podman exec $(kafka_exec_cache) kafka-topics --bootstrap-server "${KAFKA_BOOTSTRAP_SERVERS}" "${CONFLUENT_EXTRA_COMMON_OPTIONS[@]}" \
 	--list 2>&1 \
 		| grep -P ${KAFKA_TOPICS_FILTER-.}

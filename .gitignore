@@ -11,9 +11,15 @@ paswd
 # Private certificates:
 *.crt
 *.keytab
+*.jks
+*.p12
+*.pem
 
 # Just speedup symlinks:
 /.config.sh~
 
-/__.DEV.*
+/__.DEV*
 /_data
+
+# That contains password to keystores!
+/conf/DEV/confluent.properties
