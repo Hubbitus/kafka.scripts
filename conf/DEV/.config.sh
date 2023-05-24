@@ -39,5 +39,5 @@ CONFLUENT_EXTRA_COMMON_OPTIONS=(
 
 CONSUMER_GROUP_ID=kafkacat.$(hostname).$(date --iso-8601=s)
 
-#? : ${KAFKA_CONNECT_HOST:=localhost:8083}
+: ${KAFKA_CONNECT_HOST:=https://kafka-connect.k8s-dev.gid.team}
 #? : ${KSQLDB_SERVER:=http://ksqldb-2-epm-ssdl-ksqldb.by.paas.epam.com}
