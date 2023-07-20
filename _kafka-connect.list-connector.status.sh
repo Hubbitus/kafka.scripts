@@ -6,6 +6,6 @@
 source "$(dirname $0)/.shared.sh"
 
 : ${KAFKA_CONNECT_HOST?"Not enough vars set: KAFKA_CONNECT_HOST required"}
+: ${CONNECTOR?"Please ptovide CONNECTOR variable"}
 
-curl -sS ${KAFKA_CONNECT_HOST}/connectors | jq .[] -r \
-	| xargs -r -I{} bash -c 'CONNECTOR={} ./_kafka-connect.list-connector.restart.sh'
+http ${KAFKA_CONNECT_HOST}/connectors/${CONNECTOR}/status
