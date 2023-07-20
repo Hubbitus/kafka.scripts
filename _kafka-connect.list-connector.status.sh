@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
-# Script to list present kafka topics.
-# Unlike _kafka.list-topics.sh will show also partitions
+# Script to show kafka-connect connector status.
+# See also ./_kafka-connect.list-connectors.sh
 
 source "$(dirname $0)/.shared.sh"
 

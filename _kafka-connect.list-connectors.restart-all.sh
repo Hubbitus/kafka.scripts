@@ -1,7 +1,8 @@
 #!/usr/bin/bash
 
-# Script to list present kafka topics.
-# Unlike _kafka.list-topics.sh will show also partitions
+# Script to easy restart ALL kafka-connect connectors.
+# See https://docs.confluent.io/platform/current/connect/references/restapi.html#connectors
+# See also _kafka-connect.list-connector.restart.sh to restart single desired connector
 
 source "$(dirname $0)/.shared.sh"
 

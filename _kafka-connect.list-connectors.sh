@@ -1,10 +1,10 @@
 #!/usr/bin/bash
 
-# Script to list present kafka topics.
-# Unlike _kafka.list-topics.sh will show also partitions
+# List all kafka-connect connectors
+# See https://docs.confluent.io/platform/current/connect/references/restapi.html#connectors
 
 source "$(dirname $0)/.shared.sh"
 
 : ${KAFKA_CONNECT_HOST?"Not enough vars set: KAFKA_CONNECT_HOST required"}
 
-http --body ${KAFKA_CONNECT_HOST}/connectors
+http --body ${KAFKA_CONNECT_HOST}/connectors$@
