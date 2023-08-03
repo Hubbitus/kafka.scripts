@@ -2,6 +2,7 @@
 
 # Script to list present kafka topics.
 # Unlike _kafka.list-topics.sh will show also partitions
+# See also _kafkacat.list-topics.plain-list.sh
 
 source "$(dirname $0)/.shared.sh"
 

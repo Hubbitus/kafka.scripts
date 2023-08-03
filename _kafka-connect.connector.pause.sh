@@ -8,4 +8,4 @@ source "$(dirname $0)/.shared.sh"
 : ${KAFKA_CONNECT_HOST?"Not enough vars set: KAFKA_CONNECT_HOST required"}
 : ${CONNECTOR?"Please provide CONNECTOR variable"}
 
-curl -X POST ${KAFKA_CONNECT_HOST}/connectors/${CONNECTOR}/pause
+curl -X PUT ${KAFKA_CONNECT_HOST}/connectors/${CONNECTOR}/pause
