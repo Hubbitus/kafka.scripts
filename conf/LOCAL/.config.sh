@@ -2,12 +2,13 @@
 
 #set -x
 
-[ "$0" = "$BASH_SOURCE" ] && echo 'Config file must be sourced!' && exit 1
+[ "$0" = "${BASH_SOURCE[0]}" ] && echo 'Config file must be sourced!' && exit 1
+
+ENV=LOCAL
 
 set -ueo pipefail
 
 : ${KAFKA_BOOTSTRAP_SERVERS:=PLAINTEXT://localhost:9092}
-
 : ${SCHEMA_REGISTRY:=localhost:8081}
 
 # -J for JSON. Or you may provide format as you wish
@@ -24,8 +25,7 @@ KAFKACAT_SECURE_OPTIONS=()
 
 
 
-: ${KAFKA_CONNECT_HOST:=localhost:8083}
+: ${KAFKA_CONNECT_HOST:=http://localhost:8083}
 #: ${KSQLDB_SERVER:=http://localhost:8088}
 : ${KSQLDB_SERVER:=http://ksqldb-2-epm-ssdl-ksqldb.by.paas.epam.com}
 
-source "$(dirname $0)/.shared.sh"

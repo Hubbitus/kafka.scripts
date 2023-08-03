@@ -8,7 +8,6 @@ ENV=DEV
 #?: ${KERBEROS_KEYTAB_FILE:="conf/${ENV}/${KERBEROS_USER}.keytab"}
 
 : ${KAFKA_BOOTSTRAP_SERVERS:=SSL://10.221.0.93:19090,SSL://10.221.0.93:19091,SSL://10.221.0.93:19092}
-
 : ${SCHEMA_REGISTRY:=https://karapace.k8s-dev.gid.team}
 
 # -J for JSON. Or you may provide format as you wish
