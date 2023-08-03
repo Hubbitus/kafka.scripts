@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # List all kafka-connect connectors
-# See https://docs.confluent.io/platform/current/connect/references/restapi.html#connectors
+# API detailed description: https://docs.confluent.io/platform/current/connect/references/restapi.html#connectors
 
 source "$(dirname $0)/.shared.sh"
 
