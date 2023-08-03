@@ -8,4 +8,4 @@ source "$(dirname $0)/.shared.sh"
 
 : ${KAFKA_CONNECT_HOST?"Not enough vars set: KAFKA_CONNECT_HOST required"}
 
-$(dirname $0)/_kafka-connect.list-connectors.sh ?expand=info
+$(dirname $0)/_kafka-connect.connectors.list.sh ?expand=info

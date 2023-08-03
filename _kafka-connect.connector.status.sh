@@ -2,8 +2,8 @@
 
 # Script to show kafka-connect connector status.
 # API detailed description: https://docs.confluent.io/platform/current/connect/references/restapi.html#connectors
-# See also _kafka-connect.list-connectors.sh
-# See also _kafka-connect.list-connector.status.trace.sh
+# See also _kafka-connect.connectors.list.sh
+# See also _kafka-connect.connectors.list.status.trace.sh
 
 source "$(dirname $0)/.shared.sh"
 

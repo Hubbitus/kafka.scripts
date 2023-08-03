@@ -2,7 +2,7 @@
 
 # Script to restart kafka-connect connector.
 # API detailed description: https://docs.confluent.io/platform/current/connect/references/restapi.html#connectors
-# See also _kafka-connect.list-connectors.restart-all.sh for restart all
+# See also _kafka-connect.connectors.restart-all.sh for restart all
 
 source "$(dirname $0)/.shared.sh"
 
