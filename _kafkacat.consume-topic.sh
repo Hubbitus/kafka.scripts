@@ -14,7 +14,7 @@ Meantime please note:
 1. That also require set variable CONSUMER_GROUP_ID
 2. You must have access to became group member of provided group!
 3. That will require some more time on startup to check access, join group and rebalance all consumers in it (up to several seconds).
-So, it is not recommended use tis mode without the reason. Please use just TOPIC!
+So, it is not recommended use this mode without the reason. Please use just TOPIC!
 EOF
 exit 1
 }
