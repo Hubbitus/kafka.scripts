@@ -8,4 +8,4 @@ source "$(dirname $0)/.shared.sh"
 
 podman exec $(kafka_exec_cache) kafka-configs --bootstrap-server "${KAFKA_BOOTSTRAP_SERVERS}" "${CONFLUENT_EXTRA_COMMON_OPTIONS[@]}" \
 	--alter --entity-type topics --entity-name ${TOPIC} \
-	--add-config "${CONFIG}" 2>&1
+		--add-config "${CONFIG}" 2>&1

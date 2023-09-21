@@ -1,4 +1,6 @@
 
+[[ -e "$(dirname $0)/.config.global.sh" ]] && source "$(dirname $0)/.config.global.sh"
+
 source "$(dirname $0)/.config.sh${ENV+.$ENV}"
 
 : ${ENV?"Not enough vars set: Each config should define ENV variable, naming environment"}

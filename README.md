@@ -93,37 +93,37 @@ Please note, for use with Kerberos you probably will need several configuration 
    ```
    # By https://kb.example.com/display/EPMECOSYS/Pub-Sub+Clients
    [libdefaults]
-	   default_realm = EXAMPLE.COM
-	   dns_canonicalize_hostname = false
-	   rdns = false
-   
+       default_realm = EXAMPLE.COM
+       dns_canonicalize_hostname = false
+       rdns = false
+
    #    dns_lookup_realm = true
    #    dns_lookup_kdc = true
-	   dns_lookup_realm = false
-	   dns_lookup_kdc = false
+   dns_lookup_realm = false
+   dns_lookup_kdc = false
    [realms]
    #    EXAMPLE.COM = {
    #      kdc = example.com:88
    #      admin_server = example.com
    #      default_domain = example.com
    #    }
-	   EXAMPLE.COM = {
-		  kdc = EVBYMINSA0016.example.com
-		  kdc = EVBYMINSA0084.example.com
-		  kdc = EVBYMINSA0018.example.com
-		  admin_server = EVBYMINSA0016.example.com
-	   }
-	   PETERSBURG.EXAMPLE.COM = {
-		  kdc = evbyminsa0007.petersburg.example.com.
-		  kdc = evhubudsa0309.budapest.example.com.
-		  admin_server = evbyminsa0007.petersburg.example.com.
-	   }
+   EXAMPLE.COM = {
+          kdc = EVBYMINSA0016.example.com
+          kdc = EVBYMINSA0084.example.com
+          kdc = EVBYMINSA0018.example.com
+          admin_server = EVBYMINSA0016.example.com
+       }
+       PETERSBURG.EXAMPLE.COM = {
+          kdc = evbyminsa0007.petersburg.example.com.
+          kdc = evhubudsa0309.budapest.example.com.
+          admin_server = evbyminsa0007.petersburg.example.com.
+       }
    [domain_realm]
-	  .example.com = EXAMPLE.COM
-	   example.com = EXAMPLE.COM
+      .example.com = EXAMPLE.COM
+       example.com = EXAMPLE.COM
    [login]
-	   krb4_convert = true
-	   krb4_get_tickets = false
+       krb4_convert = true
+       krb4_get_tickets = false
    ```
 
 ### Typical additional files for the confluent-based utilities (kafka-acls, kafka-configs and others)
@@ -131,3 +131,12 @@ Please note, for use with Kerberos you probably will need several configuration 
 1. Client configuration like `kafka-client.properties`
 2. Truststore, possibly with configures password (e.g. `server-prod.truststore`)
 3. `jaas.conf` - java [JAAS Login Configuration File](https://docs.oracle.com/javase/7/docs/technotes/guides/security/jgss/tutorials/LoginConfigFile.html).
+
+### If you would like to use docker instead of podman
+
+If you really want to use docker instead of podman (I've not reccommend), please run first:
+
+cat <<CONF > .config.global.sh
+alias podman=docker
+shopt -s expand_aliases
+CONF

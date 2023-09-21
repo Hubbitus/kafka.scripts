@@ -23,3 +23,5 @@ paswd
 
 # That contains password to keystores!
 /conf/DEV/confluent.properties
+
+/.config.global.sh
