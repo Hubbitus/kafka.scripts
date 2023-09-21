@@ -12,6 +12,5 @@ source "$(dirname $0)/.shared.sh"
 $(dirname $0)/_kafka-connect.connector.status.sh
 
 echo "### Stack trace readable: ###"
-
 $(dirname $0)/_kafka-connect.connector.status.sh \
 	| jq .tasks[].trace -r
