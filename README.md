@@ -2,6 +2,16 @@
 
 Various kafka-related scripts to easily inspect and manage the cluster, topics, consumer groups, etc.
 
+## Requirements
+
+Scripts in the repository assume you have installed next utilities:
+* [curl](https://curl.se/)
+* [httpie](https://github.com/httpie/cli)
+* [jq](https://jqlang.github.io/jq/)
+* [podman](https://podman.io/) (highly recommended, alrough `docker` also supported, please look at the end of the readme for configuration instructions).
+
+Fore example on Fedora you may just install it like: `sudo dnf install curl httpie jq podman`
+
 ## Usage
 
 Just create [.config.sh](.config.sh) file by example with said [.config-sandbox.sh](.config-sandbox.sh). It is recommended use symlink to switch beetween configurations.
