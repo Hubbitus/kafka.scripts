@@ -7,7 +7,7 @@ source "$(dirname $0)/.shared.sh"
 
 : ${KAFKA_CONNECT_HOST?"Not enough vars set: KAFKA_CONNECT_HOST required"}
 : ${CONNECTOR?"Please provide CONNECTOR variable"}
-: "${CONNECTOR_CONFIG_FILE:=_connectors/${CONNECTOR}.config.json}"
+: "${CONNECTOR_CONFIG_FILE:=$(dirname $0)/_connectors/${CONNECTOR}.config.json}"
 
 echo CONNECTOR_CONFIG_FILE=${CONNECTOR_CONFIG_FILE}
 
