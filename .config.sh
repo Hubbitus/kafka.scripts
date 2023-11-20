@@ -1,1 +1,1 @@
-.config.sh.DEV
+.config.sh.INT

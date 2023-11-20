@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # Script to list present kafka topics as plain list, without partitions info and other infromation.
-# See als _kafkacat.list-topics.sh for more detailed information
+# See also _kafkacat.list-topics.sh for more detailed information
 
 source "$(dirname $0)/.shared.sh"
 
