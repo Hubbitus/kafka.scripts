@@ -146,7 +146,9 @@ Please note, for use with Kerberos you probably will need several configuration 
 
 If you really want to use docker instead of podman (I've not reccommend), please run first:
 
-cat <<CONF > .config.global.sh
-alias podman=docker
-shopt -s expand_aliases
-CONF
+   ```shell
+   cat <<CONF > .config.global.sh
+   alias podman=docker
+   shopt -s expand_aliases
+   CONF
+   ```
