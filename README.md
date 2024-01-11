@@ -152,3 +152,53 @@ If you really want to use docker instead of podman (I've not reccommend), please
    shopt -s expand_aliases
    CONF
    ```
+
+## Directions and examples of usage
+
+### Topics
+#### Most scripts will provide usage help and diractions
+
+   ```shell
+   $ ./_kafka.consume-topic.sh
+   ./_kafka.consume-topic.sh: line 7: TOPIC: Not enough vars set: TOPIC required. Example: TOPIC=topic1 ./_kafka.consume-topic.sh
+   ```
+
+#### Topics list
+
+    ./_kafkacat.list-topics.sh
+
+Will provide JSON outpupt about topics with name, partitions, lader and so on. If you are wishes just list do:
+
+    ./_kafkacat.list-topics.plain-list.sh
+
+#### Consume topic
+
+    TOPIC=gidplatform_dev.mytracker.activities ./_kafkacat.consume-topic.sh
+
+If topic uses AVRO and schema registry:
+
+    TOPIC=gidplatform_dev.mytracker.activities ./_kafkacat.consume-topic.avro.sh
+
+Avro, last 5 messages:
+
+    N=5 TOPIC=gidplatform_dev.mytracker.activities ./_kafkacat.consume-topic.avro.sh
+
+> **TIP** If you are prefer you always can pass additional arguments to the underlying utilities too. E.g.: `TOPIC=gidplatform-test.tracking ./_kafkacat.consume-topic.sh -o-2`
+
+##### Filtering (select ... where)
+
+Strongly speaking this is not strictly retlated, but having jq we may turn it into "a-la SQL". E.g.:
+
+    TOPIC=gidplatform_dev.mytracker.activities ./_kafkacat.consume-topic.avro.lastN.sh | jq 'select("2023-12-31" == .payload.dtEvent.string)'
+
+### Metadata
+
+#### List of consumer groups
+
+    ./_kafka.consumer-groups.list.sh
+
+#### Details about consumer group:
+
+Said by `recommend-stage`, from the output of above command:
+
+    KAFKA_CONSUMER_GROUP=recommend-stage ./_kafka.consumer-group.describe.sh
