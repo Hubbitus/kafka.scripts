@@ -30,7 +30,12 @@ function kafka_exec_cache(){
 	container_exec_cache "cp-kafka-exec-cache-${ENV}" docker.io/confluentinc/cp-kafka:7.1.0 "${CONTAINER_CACHE_EXTRA_OPTIONS_confluent[@]}"
 }
 function kafkacat_exec_cache(){
-	container_exec_cache "kafkacat-exec-cache-${ENV}" docker.io/hubbitus/kafkacat-sasl:20210622 "${CONTAINER_CACHE_EXTRA_OPTIONS_kafkacat[@]}"
+	# SALS+Kerberros tested version (see https://github.com/Hubbitus/kafkacat repositore readme for the more details):
+	# container_exec_cache "kafkacat-exec-cache-${ENV}" docker.io/hubbitus/kafkacat-sasl:20210622 "${CONTAINER_CACHE_EXTRA_OPTIONS_kafkacat[@]}"
+	# echo kafkacat
+
+	container_exec_cache "kafkacat-exec-cache-${ENV}" docker.io/hubbitus/kafkacat-sasl:20240202 "${CONTAINER_CACHE_EXTRA_OPTIONS_kafkacat[@]}"
+	echo kcat
 }
 
 function kafkactl_exec_cache(){
