@@ -42,6 +42,22 @@ function kafkactl_exec_cache(){
 	container_exec_cache "kafkactl-exec-cache-${ENV}" docker.io/deviceinsight/kafkactl:v1.11.1 -v ~/.config/kafkactl/config.yml:/etc/kafkactl/config.yml
 }
 
+# Most common JQ formatting with payload
+function JQ(){
+jq ". |
+	{
+		key: .key,
+		partition: .partition,
+		offset: .offset,
+		tstype: .tstype,
+		ts: .ts,
+		_ts_time: ( if .ts then .ts / 1000 | strftime(\"%Y-%m-%dT%H:%M:%S %Z\") else null end ),
+		_schema_url: (\"${SCHEMA_REGISTRY}/schemas/ids/\" + (.value_schema_id|tostring)),
+		payload: .payload
+	}" "$@"
+}
+
+# Common JQ extractor and formatter, with CDM headers (without payload)
 function JQ_common(){
 jq ". |
 	{
