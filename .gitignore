@@ -21,7 +21,9 @@ paswd
 /__.DEV*
 /_data
 
-# That contains password to keystores!
-/conf/DEV/confluent.properties
+# Configurations. That may contains passwords and other credentials
+/.config.*
+/conf/*
+!/conf/DEV
 
-/.config.global.sh
+/_connectors/
