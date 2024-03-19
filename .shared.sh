@@ -66,7 +66,7 @@ jq --unbuffered ${JQ_OPTIONS} ". |
 
 # Common JQ extractor and formatter, with CDM headers (without payload)
 function JQ_common(){
-jq --unbuffered ". |
+jq --unbuffered ${JQ_OPTIONS} ". |
 	{
 		key: .key,
 		partition: .partition,
@@ -78,5 +78,14 @@ jq --unbuffered ". |
 		\"headers[cdm.type_metadata.type][0]\": getpath([\"headers\", \"cdm.type_metadata.type\", 0]),
 		\"headers[datahub-transform-processor.payload-schema-subject][0]\": getpath([\"headers\", \"datahub-transform-processor.payload-schema-subject\", 0]),
 		\"headers[cdm.type_metadata.source][0]\": getpath([\"headers\", \"cdm.type_metadata.source\", 0])
-	}" "$@"
+	} ${JQ_ADDON}" "$@"
+}
+
+function JSON_compact (){
+	# For coloring options you may select themes: pygmentize -L styles --json
+	# For JSON compact options good playground of options: https://j-brooke.github.io/FracturedJson/
+	JQ_OPTIONS=-c JQ \
+		| while read -r _json; do compact-json <( echo "${_json}" ) --max-inline-length 1250 --max-compact-list-complexity 7 --no-ensure-ascii | pygmentize -O style=friendly; done
+
+#		| while read -r _json; do underscore --wrapwidth $(tput cols) pretty -d "$_json" "$@" ; done
 }

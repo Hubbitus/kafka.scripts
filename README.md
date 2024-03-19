@@ -9,6 +9,7 @@ Scripts in the repository assume you have installed next utilities:
 * [httpie](https://github.com/httpie/cli)
 * [jq](https://jqlang.github.io/jq/)
 * [podman](https://podman.io/) (highly recommended, alrough `docker` also supported, please look at the end of the readme for configuration instructions).
+* (optionally)[pygmentize](https://pygments.org/docs/cmdline/) - for better default formatting output in JSON (see [.shared.sh] functions)
 
 Fore example on Fedora you may just install it like: `sudo dnf install curl httpie jq podman`
 
