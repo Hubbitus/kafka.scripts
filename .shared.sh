@@ -1,5 +1,12 @@
+#!/usr/bin/bash
 
 [[ -e "$(dirname $0)/.config.global.sh" ]] && source "$(dirname $0)/.config.global.sh"
+
+# Default env name, if not set is parent dir name:
+function infer_ENV(){
+	: ${ENV:=$(basename $(dirname $(realpath ${BASH_SOURCE[1]})))}
+	export ENV
+}
 
 source "$(dirname $0)/.config.sh${ENV+.$ENV}"
 
@@ -21,7 +28,7 @@ function container_exec_cache(){
 
 	# grep -q required: https://github.com/moby/moby/issues/35057#issuecomment-333476596
 	podman ps -q --filter "name=${_name}" --filter status=running | grep -q . \
-		|| (podman rm -vf "${_name}" &>/dev/null || : ; podman run --rm -d --entrypoint sleep "$@" --name "${_name}" "${_image}" 1h > /dev/null )
+		|| (podman rm -vf "${_name}" &>/dev/null || : ; podman run --rm -d --entrypoint sleep "$@" --name "${_name}" "${_image}" 1h > /dev/null)
 
 	echo "${_name}"
 }
@@ -44,7 +51,7 @@ function kafkactl_exec_cache(){
 
 # Most common JQ formatting with payload
 function JQ(){
-jq ". |
+jq --unbuffered ${JQ_OPTIONS} ". |
 	{
 		key: .key,
 		partition: .partition,
@@ -54,12 +61,12 @@ jq ". |
 		_ts_time: ( if .ts then .ts / 1000 | strftime(\"%Y-%m-%dT%H:%M:%S %Z\") else null end ),
 		_schema_url: (\"${SCHEMA_REGISTRY}/schemas/ids/\" + (.value_schema_id|tostring)),
 		payload: .payload
-	}" "$@"
+	} ${JQ_ADDON}" "$@"
 }
 
 # Common JQ extractor and formatter, with CDM headers (without payload)
 function JQ_common(){
-jq ". |
+jq --unbuffered ". |
 	{
 		key: .key,
 		partition: .partition,

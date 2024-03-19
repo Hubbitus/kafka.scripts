@@ -9,6 +9,7 @@ ENV=DEV
 
 : ${KAFKA_BOOTSTRAP_SERVERS:=SSL://10.221.0.93:19090,SSL://10.221.0.93:19091,SSL://10.221.0.93:19092}
 : ${SCHEMA_REGISTRY:=https://karapace.k8s-dev.gid.team}
+: ${KEY_SERIALIZATION:=-s key=avro}
 
 # -J for JSON. Or you may provide format as you wish
 : ${KAFKACAT_CONSUME_TOPIC_FORMAT=-J}

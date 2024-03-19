@@ -4,12 +4,15 @@
 
 [ "$0" = "${BASH_SOURCE[0]}" ] && echo 'Config file must be sourced!' && exit 1
 
-ENV=LOCAL
+# Default env name, if not set is parent dir name:
+infer_ENV
+
 
 set -ueo pipefail
 
 : ${KAFKA_BOOTSTRAP_SERVERS:=PLAINTEXT://localhost:9092}
 : ${SCHEMA_REGISTRY:=localhost:8081}
+: ${KEY_SERIALIZATION:=-s key=avro}
 
 # -J for JSON. Or you may provide format as you wish
 : ${KAFKACAT_CONSUME_TOPIC_FORMAT:=-J}

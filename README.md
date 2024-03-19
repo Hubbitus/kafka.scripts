@@ -44,6 +44,7 @@ ENV=PROD
 : ${KAFKA_BOOTSTRAP_SERVERS:=kafka.epm-eco.projects.example.com:9095}
 
 : ${SCHEMA_REGISTRY:=http://schema-registry.epm-eco.projects.example.com:8081}
+: ${KEY_SERIALIZATION:=-s key=avro}
 
 # -J for JSON. Or you may provide format as you wish
 : ${KAFKACAT_CONSUME_TOPIC_FORMAT=-J}

@@ -9,5 +9,5 @@ source "$(dirname $0)/.shared.sh"
 : ${SCHEMA_REGISTRY?"Not enough vars set: SCHEMA_REGISTRY required"}
 
 source "$(dirname $0)/_kafkacat.consume-topic.sh" \
-	-s value=avro -r "${SCHEMA_REGISTRY}" \
+	-s value=avro ${KEY_SERIALIZATION} -r "${SCHEMA_REGISTRY}" \
 		"$@"
