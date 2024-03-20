@@ -19,10 +19,10 @@ To produce with AVRO support we need have scheme to encode data. That may be pro
 3) AVRO_SCHEMA_LAST='true'. Most automatic way! In that variant will be performed attempt to read last message from the configured topic, get there scheme ID, download that from the \${SCHEMA_REGISTRY} and use for the encoding data.
 	WARNING! Even if file in kcat format and contains records for different topics, schema will be taken only by first record topics specification!!!
 
-If you provided argument <file.json> is already in ktat format and contains JSON-lines with keys: key, topic, payload, then they will be taken by default! Provided variables take precedence (e.g. you may re-route that into another topic)!
-We will not use 'value_schema_id' from file because most frequently that is exported from different environment (and because that is not full URL thta is hardly or impossible to check)!
+If provided argument <file.json> is already in kcat format and contains JSON-lines with keys: key, topic, payload, then they will be taken by default! Provided variables take precedence (e.g. you may re-route that into another topic)!
+We will not use 'value_schema_id' from file because most frequently that is exported from different environment (and because that is not the full URL that is hardly or impossible to check)!
 
-Examples of invocation:
+Examples of invocation (kcat-exported-file.json is obtained something like: N=2 TOPIC=gidplatform_preprod.GID_API_DB.api.public.user ./_kafkacat.consume-topic.avro.lastN.sh > kcat-exported-file.json):
 AVRO_SCHEMA_LAST=true $0 <kcat-exported-file.json>
 TOPIC=my_topic KEY=123 AVRO_SCHEMA_LAST=true $0 <file.json>
 TOPIC=my_topic KEY=123 AVRO_SCHEMA_URL=http://schema-registry-sbox.epm-eco.projects.epam.com:8081/subjects/epam.mdm.IndustrySectorProject/versions/latest $0 <file.json>
@@ -45,11 +45,11 @@ PAYLOAD_JSON_FILE="$1"
 : ${KAFKA_BOOTSTRAP_SERVERS?"Not enough vars set: KAFKA_BOOTSTRAP_SERVERS required.$(usage)"}
 : ${SCHEMA_REGISTRY?"Not enough vars set: SCHEMA_REGISTRY required$(usage)"}
 [[ ! "${AVRO_SCHEMA_FILE-}${AVRO_SCHEMA_URL-}${AVRO_SCHEMA_LAST-}" ]] && echo 'One of the AVRO_SCHEMA_FILE, AVRO_SCHEMA_URL, AVRO_SCHEMA_LAST must be set!' && usage
-#: ${TOPIC?"Not enough vars set: TOPIC required.$(usage)"}
 [[ ! ${TOPIC-} ]] && $(jq .topic "$PAYLOAD_JSON_FILE" | grep -q null) && echo "In payload file [${PAYLOAD_JSON_FILE}] key [topic] absent atleast in one record! So, variable TOPIC is required then (and will have precedance for all)" && usage
+: "${AVRO_TOOLS_VERSION:=1.11.3}"
 ######### /Check requirements ########
 
-_AVRO_TOOLS_JAR=.tmp/avro-tools-1.10.2.jar
+_AVRO_TOOLS_JAR=.tmp/avro-tools-${AVRO_TOOLS_VERSION}.jar
 _TMP_DIR=.tmp
 mkdir -p "${_TMP_DIR}"
 
@@ -76,7 +76,9 @@ function downloadSchema(){
 	local _url="$1"
 	_AVRO_SCHEMA_FILE="$(mktemp "${_TMP_DIR}"/schema_XXXXX.avsc)"
 	_RESP=$(curl -sS ${_url})
-	echo "${_RESP}" | jq '.schema | fromjson' > "${_AVRO_SCHEMA_FILE}"
+	# "del(.namespace)" is the workaround of error "AvroTypeException: Unknown union branch Value". By https://stackoverflow.com/questions/49926146/org-apache-avro-avrotypeexception-unknown-union-branch
+	# kcat incorrectly work with namespaces! So, adjustments may be needed! See my bugreport https://github.com/edenhill/kcat/issues/376 and https://stackoverflow.com/questions/49926146/org-apache-avro-avrotypeexception-unknown-union-branch/49939794#49939794
+	echo "${_RESP}" | jq '.schema | fromjson | del(.namespace)' > "${_AVRO_SCHEMA_FILE}"
 	# Important for the `latest` schemas
 	_ID=$(echo "${_RESP}" | jq .id)
 }
@@ -107,7 +109,7 @@ function encodeMessageToAVRO(){
 	local _record="$1"
 
 	if [[ ! -f ${_AVRO_TOOLS_JAR} ]]; then
-		mvn dependency:get -Dartifact=org.apache.avro:avro-tools:1.10.2:jar -Ddest="${_TMP_DIR}"
+		mvn dependency:get -Dartifact=org.apache.avro:avro-tools:${AVRO_TOOLS_VERSION}:jar -Ddest="${_TMP_DIR}"
 	fi
 
 	[[ -f ${_AVRO_ENCODED_DATA_FILE-} ]] && rm -vf "${_AVRO_ENCODED_DATA_FILE}"
@@ -131,26 +133,25 @@ shopt -s lastpipe
 
 _records_count=$(jq --slurp length "${PAYLOAD_JSON_FILE}")
 _i=0
-# 2 JQ in pipe to work with formatted JSON files too!
-jq . "${PAYLOAD_JSON_FILE}" | jq -c | while read -r RECORD; do
+jq . "${PAYLOAD_JSON_FILE}" -c | while read -r RECORD; do
 	((++_i))
 	echo '####################################################################'
 	echo -e "\e[1;49;34mPROCESS RECORD\e[0m: (${_i}/${_records_count}): $( echo "${RECORD}" | jq '{ topic: .topic, key: .key, offset: .offset, tstype: .tstype, ts: .ts, ts__time__: ( if .ts then .ts / 1000 | strftime("%Y-%m-%dT%H:%M:%S %Z") else null end ), value_schema_id: .value_schema_id }' )"
-	# @TODO naive approach, we parse only 1 value for the header. Potentially that may be array
-	_HEADERS=$(echo "$RECORD" | jq '.headers | to_entries | map("-H " + .key + "=\"" + .value[0] + "\"") | join(" ")' -r) #'
+	# @TODO naive approach, we parse only 1 value for the header. Potentially that may be array. Or absent at all
+	 _HEADERS=$(echo "$RECORD" | jq '( if .headers then .headers | to_entries | map("-H " + .key + "=\"" + .value[0] + "\"") | join(" ") else "" end)' -r) #'
 	echo "Headers will be used: ${_HEADERS}"
-	_key_record=$(echo "$RECORD" | jq -r .key)
+	_key_record=$(echo "$RECORD" | jq -cr .key)
 	_key=${KEY-${_key_record}}
 	_topic_record=$(echo "$RECORD" | jq -r .topic)
 	_topic=${TOPIC-${_topic_record}}
-	echo "KEY: ENV variable provided=${KEY-}, record.key=${_key_record}, will be used value: ${_key}"
-	echo "TOPIC: ENV variable provided=${TOPIC-}, record.key=${_topic_record}, will be used value: ${_topic}"
+	echo "KEY: ENV variable provided=[${KEY-}], record.key=[${_key_record}], will be used value: [${_key}]"
+	echo "TOPIC: ENV variable provided=[${TOPIC-}], record.topic=[${_topic_record}], will be used value: [${_topic}]"
 	encodeMessageToAVRO "$(echo "${RECORD}" | jq '.payload // .')"
 	# NOTE, we use file in container! So, expected parameter CONTAINER_CACHE_EXTRA_OPTIONS_kafkacat=('-v.:/host')!
 	# @TODO that is not work with stdin redirection and sourcing unfortunately!
 	podman exec $(kafkacat_exec_cache) kafkacat \
 		-b "${KAFKA_BOOTSTRAP_SERVERS}" "${KAFKACAT_SECURE_OPTIONS[@]}" -m30 \
-			-P -e -t ${_topic} -k ${_key} ${_HEADERS} /host/${_AVRO_ENCODED_DATA_FILE}
+			-P -e -t ${_topic} -k "${_key}" ${_HEADERS} /host/${_AVRO_ENCODED_DATA_FILE}
 
 	echo -e '\t\e[0;49;92m...SENT!\e[0m'
 	#source "$(dirname $0)/_kafkacat.sh" \
