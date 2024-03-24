@@ -41,7 +41,9 @@ function kafkacat_exec_cache(){
 	# container_exec_cache "kafkacat-exec-cache-${ENV}" docker.io/hubbitus/kafkacat-sasl:20210622 "${CONTAINER_CACHE_EXTRA_OPTIONS_kafkacat[@]}"
 	# echo kafkacat
 
-	container_exec_cache "kafkacat-exec-cache-${ENV}" docker.io/hubbitus/kafkacat-sasl:20240202 "${CONTAINER_CACHE_EXTRA_OPTIONS_kafkacat[@]}"
+#	container_exec_cache "kafkacat-exec-cache-${ENV}" docker.io/hubbitus/kafkacat-sasl:20240202 "${CONTAINER_CACHE_EXTRA_OPTIONS_kafkacat[@]}"
+	container_exec_cache "kafkacat-exec-cache-${ENV}" docker.io/hubbitus/kafkacat-sasl:20240324 "${CONTAINER_CACHE_EXTRA_OPTIONS_kafkacat[@]}"
+#	container_exec_cache "kafkacat-exec-cache-${ENV}" docker.io/edenhill/kcat:1.7.1 "${CONTAINER_CACHE_EXTRA_OPTIONS_kafkacat[@]}"
 	echo kcat
 }
 
@@ -59,9 +61,11 @@ jq --unbuffered ${JQ_OPTIONS} ". |
 		tstype: .tstype,
 		ts: .ts,
 		_ts_time: ( if .ts then .ts / 1000 | strftime(\"%Y-%m-%dT%H:%M:%S %Z\") else null end ),
-		_schema_url: (\"${SCHEMA_REGISTRY}/schemas/ids/\" + (.value_schema_id|tostring)),
 		payload: .payload
-	} ${JQ_ADDON}" "$@"
+	}
+	+ if .value_schema_id then { \"_schema_url_value\": (\"${SCHEMA_REGISTRY}/schemas/ids/\" + (.value_schema_id|tostring)) } else null end
+	+ if .key_schema_id then { \"_schema_url_key\": (\"${SCHEMA_REGISTRY}/schemas/ids/\" + (.key_schema_id|tostring)) } else null end
+	${JQ_ADDON}" "$@"
 }
 
 # Common JQ extractor and formatter, with CDM headers (without payload)
