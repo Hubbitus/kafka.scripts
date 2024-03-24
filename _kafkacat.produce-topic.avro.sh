@@ -104,7 +104,7 @@ trap 'cleanup' EXIT INT
 # @param $TOPIC used
 # @param $SCHEMA_REGISTRY used
 function publishSchema(){
-  local _kind="$2"
+	local _kind="$2"
 #  debug "Publishing [${2}] schema from file [${1}] to [${SCHEMA_REGISTRY}/subjects/${TOPIC}-${2}/versions]"
 	local _ID=$(curl -sS -X POST -H "Content-Type: application/json" --data "$(jq '{schema: (. | tojson)}' ${1})" ${SCHEMA_REGISTRY}/subjects/${TOPIC}-${2}/versions | jq .id) # '
 	debug "Schema for [${_kind}] registered with id [${_ID}]. URL: [${SCHEMA_REGISTRY}/schemas/ids/${_ID}] (${SCHEMA_REGISTRY}/subjects/${TOPIC}-${2}/versions)" > /dev/stderr
@@ -146,7 +146,7 @@ function encodeToAVRO(){
 	local _schema_file="${_AVRO_SCHEMA_FILE[${_kind}]}"
 	_AVRO_ENCODED_DATA_FILE[${_kind}]="${_TMP_DIR}/avro_data.${_kind}.avro"
 	rm -vf "${_AVRO_ENCODED_DATA_FILE[$_kind]}" 1>&2
-  debug "Encoding to avro [${_kind}] by schema id [${_AVRO_SCHEMA_ID[$_kind]}] from file [${_schema_file}] to [${_AVRO_ENCODED_DATA_FILE[${_kind}]}]"
+	debug "Encoding to avro [${_kind}] by schema id [${_AVRO_SCHEMA_ID[$_kind]}] from file [${_schema_file}] to [${_AVRO_ENCODED_DATA_FILE[${_kind}]}]"
 
 	if [[ ! -f ${_AVRO_TOOLS_JAR} ]]; then
 	  mvn dependency:get -Dartifact=org.apache.avro:avro-tools:${AVRO_TOOLS_VERSION}:jar -Ddest="${_TMP_DIR}"
@@ -184,21 +184,21 @@ jq . "${PAYLOAD_JSON_FILE}" -c | while read -r _RECORD; do
 	echo "RECORD.key: [${_key}]; _schema_url_key=${_schema_url_key=}; _schema_url_value=${_schema_url_value}"
 	echo "TOPIC will be used: [${_topic}]; "
 
-  # @TODO add caching and do not download/upload on each record!
-  if [[ 'false' != "${AVRO_SCHEMA_key}" ]]; then
-    downloadSchema "${_schema_url_key}" key
-    [[ ${_schema_url_key} != $SCHEMA_REGISTRY* ]] && publishSchema "${_AVRO_SCHEMA_FILE[key]}" key
-    encodeToAVRO key "${_key}"
-  fi
-  if [[ 'false' != "${AVRO_SCHEMA_value}" ]]; then
-    downloadSchema "${_schema_url_value}" value
-    [[ ${_schema_url_value} != $SCHEMA_REGISTRY* ]] && publishSchema "${_AVRO_SCHEMA_FILE[value]}" value
-    encodeToAVRO value "$(echo "${_RECORD}" | jq '.payload // .')"
-  fi
+	# @TODO add caching and do not download/upload on each record!
+	if [[ 'false' != "${AVRO_SCHEMA_key}" ]]; then
+		downloadSchema "${_schema_url_key}" key
+		[[ ${_schema_url_key} != $SCHEMA_REGISTRY* ]] && publishSchema "${_AVRO_SCHEMA_FILE[key]}" key
+		encodeToAVRO key "${_key}"
+	fi
+	if [[ 'false' != "${AVRO_SCHEMA_value}" ]]; then
+		downloadSchema "${_schema_url_value}" value
+		[[ ${_schema_url_value} != $SCHEMA_REGISTRY* ]] && publishSchema "${_AVRO_SCHEMA_FILE[value]}" value
+		encodeToAVRO value "$(echo "${_RECORD}" | jq '.payload // .')"
+	fi
 
-  cat "${_AVRO_ENCODED_DATA_FILE[key]}" > "${_TMP_DIR}/full.avro"
-  echo -en ":" >> "${_TMP_DIR}/full.avro"
-  cat "${_AVRO_ENCODED_DATA_FILE[value]}" >> "${_TMP_DIR}/full.avro"
+	cat "${_AVRO_ENCODED_DATA_FILE[key]}" > "${_TMP_DIR}/full.avro"
+	echo -en ":" >> "${_TMP_DIR}/full.avro"
+	cat "${_AVRO_ENCODED_DATA_FILE[value]}" >> "${_TMP_DIR}/full.avro"
 
 	# NOTE, we use file in container! So, expected parameter CONTAINER_CACHE_EXTRA_OPTIONS_kafkacat=('-v.:/host')!
 	# @TODO that is not work with stdin redirection and sourcing unfortunately!
