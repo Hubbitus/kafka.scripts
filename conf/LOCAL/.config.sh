@@ -12,7 +12,8 @@ set -ueo pipefail
 
 : ${KAFKA_BOOTSTRAP_SERVERS:=PLAINTEXT://localhost:9092}
 : ${SCHEMA_REGISTRY:=localhost:8081}
-: ${KEY_SERIALIZATION:=-s key=avro}
+#: ${KEY_SERIALIZATION:=-s key=avro}
+: ${KEY_SERIALIZATION:=-s key=s}
 
 # -J for JSON. Or you may provide format as you wish
 : ${KAFKACAT_CONSUME_TOPIC_FORMAT:=-J}
