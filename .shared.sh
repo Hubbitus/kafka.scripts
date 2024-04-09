@@ -93,3 +93,7 @@ function JSON_compact (){
 
 #		| while read -r _json; do underscore --wrapwidth $(tput cols) pretty -d "$_json" "$@" ; done
 }
+
+function JSON_compact_JSON_payload(){
+	JQ_ADDON='| del(.payload) + { payload: (.payload | fromjson) }' JSON_compact
+}
