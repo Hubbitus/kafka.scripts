@@ -16,6 +16,8 @@ if [[ ! -e "${SCHEMA_AVSC_FILE}" ]]; then
 	exit 1
 fi
 
-echo '{"schemaType": "AVRO","schema": "' $( sed 's/"/\\"/g' ${SCHEMA_AVSC_FILE} ) '"}' \
+set -x
+
+echo "{\"schemaType\": \"AVRO\",\"schema\": $( jq '. | tojson' ${SCHEMA_AVSC_FILE} )}" \
 	| http -pb POST ${SCHEMA_REGISTRY}/subjects/${SCHEMA_SUBJECT_NAME}/versions \
 		| jq .id

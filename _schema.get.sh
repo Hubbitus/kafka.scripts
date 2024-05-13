@@ -9,6 +9,6 @@ source "$(dirname $0)/.shared.sh"
 : "${SCHEMA_SUBJECT_NAME:=${SCHEMA}-value}"
 : "${SCHEMA_VERSION:=latest}"
 
-set -x
+#set -x
 
 http -pb GET ${SCHEMA_REGISTRY}/subjects/${SCHEMA_SUBJECT_NAME}/versions/${SCHEMA_VERSION}/schema
