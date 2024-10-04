@@ -95,5 +95,5 @@ function JSON_compact (){
 }
 
 function JSON_compact_JSON_payload(){
-	JQ_ADDON='| del(.payload) + { payload: (.payload | fromjson) }' JSON_compact
+	JQ_ADDON="| del(.payload) + { payload: (.payload | fromjson) }${JQ_ADDON}" JSON_compact
 }
