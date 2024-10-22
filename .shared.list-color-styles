@@ -1,0 +1,19 @@
+#!/usr/bin/bash
+
+set -e
+
+export ENV=DATA_DEV
+
+source ./.shared.sh
+
+pygmentize -L styles --json | jq '.styles | keys[]' -r \
+	| while read -r style; do
+	echo "
+###########################
+#### STYLE ${style}:"
+	TOPIC=gidplatform-dev.tracking N=1 ./_kafkacat.consume-topic.lastN.sh < /dev/null | PYGMENTIZE_STYLE=${style} JSON_compact_JSON_payload
+	echo "code: $?"
+done | tee $(basename $0).styles.example
+
+echo "To see results again from last run with scrolling just do:
+less -R $(basename $0).styles"

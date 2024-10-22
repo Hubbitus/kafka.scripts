@@ -88,8 +88,9 @@ jq --unbuffered ${JQ_OPTIONS} ". |
 function JSON_compact (){
 	# For coloring options you may select themes: pygmentize -L styles --json
 	# For JSON compact options good playground of options: https://j-brooke.github.io/FracturedJson/
+	# For the PYGMENTIZE_STYLE option see script .shared.list-color-styles and .shared.list-color-styles.styles.example as output
 	JQ_OPTIONS=-c JQ \
-		| while read -r _json; do compact-json <( echo "${_json}" ) --max-inline-length 1250 --max-compact-list-complexity 7 --no-ensure-ascii | pygmentize -O style=friendly; done
+		| while read -r _json; do compact-json <( echo "${_json}" ) --max-inline-length 1250 --max-compact-list-complexity 7 --no-ensure-ascii | pygmentize -O style=${PYGMENTIZE_STYLE-friendly}; done
 
 #		| while read -r _json; do underscore --wrapwidth $(tput cols) pretty -d "$_json" "$@" ; done
 }
