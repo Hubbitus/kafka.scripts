@@ -5,7 +5,7 @@ source "$(dirname $0)/.shared.sh"
 function usage(){
 cat <<EOF
 
-E.g. to list last 10 messages (with offsets -O) and exit:
+E.g. to list last N (default 10) messages (with offsets -O) and exit:
 TOPIC=topic1 $0 -Oe -o-10 -c10
 See also _kafkacat.consume-topic.lastN.sh script for simplicity
 
