@@ -8,7 +8,7 @@ function infer_ENV(){
 	export ENV
 }
 
-source "$(dirname $0)/.config.sh${ENV+.$ENV}"
+source "$(dirname ${BASH_SOURCE[0]})/.config.sh${ENV+.$ENV}"
 
 : ${ENV?"Not enough vars set: Each config should define ENV variable, naming environment"}
 
@@ -41,7 +41,6 @@ function kafkacat_exec_cache(){
 	# container_exec_cache "kafkacat-exec-cache-${ENV}" docker.io/hubbitus/kafkacat-sasl:20210622 "${CONTAINER_CACHE_EXTRA_OPTIONS_kafkacat[@]}"
 	# echo kafkacat
 
-#	container_exec_cache "kafkacat-exec-cache-${ENV}" docker.io/hubbitus/kafkacat-sasl:20240202 "${CONTAINER_CACHE_EXTRA_OPTIONS_kafkacat[@]}"
 	container_exec_cache "kafkacat-exec-cache-${ENV}" docker.io/hubbitus/kafkacat-sasl:20240324 "${CONTAINER_CACHE_EXTRA_OPTIONS_kafkacat[@]}"
 #	container_exec_cache "kafkacat-exec-cache-${ENV}" docker.io/edenhill/kcat:1.7.1 "${CONTAINER_CACHE_EXTRA_OPTIONS_kafkacat[@]}"
 	echo kcat
@@ -53,8 +52,9 @@ function kafkactl_exec_cache(){
 
 # Most common JQ formatting with payload
 function JQ(){
-jq --unbuffered ${JQ_OPTIONS} ". |
+	jq --unbuffered ${JQ_OPTIONS} ". |
 	{
+		topic: .topic,
 		key: .key,
 		partition: .partition,
 		offset: .offset,
@@ -70,7 +70,7 @@ jq --unbuffered ${JQ_OPTIONS} ". |
 
 # Common JQ extractor and formatter, with CDM headers (without payload)
 function JQ_common(){
-jq --unbuffered ${JQ_OPTIONS} ". |
+	jq --unbuffered ${JQ_OPTIONS} ". |
 	{
 		key: .key,
 		partition: .partition,
@@ -85,16 +85,38 @@ jq --unbuffered ${JQ_OPTIONS} ". |
 	} ${JQ_ADDON}" "$@"
 }
 
-function JSON_compact (){
+function JSON_compact(){
 	# For coloring options you may select themes: pygmentize -L styles --json
-	# For JSON compact options good playground of options: https://j-brooke.github.io/FracturedJson/
 	# For the PYGMENTIZE_STYLE option see script .shared.list-color-styles and .shared.list-color-styles.styles.example as output
+	# For JSON compact options good playground of options: https://j-brooke.github.io/FracturedJson/
 	JQ_OPTIONS=-c JQ \
-		| while read -r _json; do compact-json <( echo "${_json}" ) --max-inline-length 1250 --max-compact-list-complexity 7 --no-ensure-ascii | pygmentize -O style=${PYGMENTIZE_STYLE-friendly}; done
+		| while read -r _json; do compact-json <( echo "${_json}" ) --max-inline-length ${COMPACT_JSON_LINE_LENGTH-1250} --max-compact-list-complexity 7 --no-ensure-ascii | pygmentize -O style=${PYGMENTIZE_STYLE-friendly}; done
 
 #		| while read -r _json; do underscore --wrapwidth $(tput cols) pretty -d "$_json" "$@" ; done
 }
 
 function JSON_compact_JSON_payload(){
 	JQ_ADDON="| del(.payload) + { payload: (.payload | fromjson) }${JQ_ADDON}" JSON_compact
+}
+
+function JQ_track_event(){
+	JQ_ADDON=$(cat <<- END
+		| del(.payload) + { payload: (.payload | fromjson) }
+		| . += { "meta": {
+				"userId": .payload.body.userId,
+				"accoutId": (.payload.body.userId | sub("\\\[|\\\]"; "") | split(",")[0]),
+				"timestamp": .payload.body.timestamp
+				}
+			}
+		| . += { "event": {
+				"type": .payload.body.type,
+				"eventName": .payload.body.event,
+				"properties": .payload.body.properties,
+				}
+			}
+		| del(.topic, .key, .offset, .payload, .partition, .tstype, .ts)
+		${JQ_ADDON}
+END
+	)
+ JQ
 }

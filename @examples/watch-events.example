@@ -1,0 +1,117 @@
+#!/usr/bin/bash
+
+set -e
+
+export ENV=DATA_DEV
+export KEY_SERIALIZATION='-s key=avro'
+
+source ../.shared.sh
+
+## -1) Gather sample messages in RAW format
+#ENV=DATA_DEV TOPIC=gidplatform-test.tracking ./_kafkacat.consume-topic.sh -o-2 "$@" \
+#	| tee watch-events.example.sample-messages \
+#		| jq '. | select(.payload | index("858b0826-6ab9-46a1-a0e8-5c05d8f3b6d7"))'
+#exit
+## Example:
+##{
+##    "topic": "gidplatform-test.tracking",
+##    "key": "1eb89f5c0420f5c3b4b7747ec583b5d0d01ed048905d52b8797aed03650a879f",
+##    "offset": 3991046,
+##    "_ts_time": "2024-10-29T13:28:56 MSK",
+##    "payload": {
+##        "body": { "sentAt": "2024-10-29T13:28:55.189Z", "writeKey": "dev.local", "type": "track", "event": "close", "properties": {"iri": "ru.gid.app://loyal/profile?title=Профиль лояльность", "iri_prev": "ru.gid.app://main?title=Главная", "type": "screen", "pair": "1730208498818", "open_duration_ms": "30488"}, "messageId": "c980c1e0-cda1-458e-b225-3204db29d508", "timestamp": "2024-10-29T13:28:49.762Z", "integrations": {}, "anonymousId": "584cca11-e9f6-4386-b22e-7d111a00f842", "userId": "[858b0826-6ab9-46a1-a0e8-5c05d8f3b6d7,56ffdae4-5429-4dea-bfe6-01ed36d8ba08,01.Test]" }
+##    },
+##    "event": {"type": "track"}
+##}
+
+####################################################################
+
+## 0) Initial variant, source for the enhancment
+## Watch my (PavelAlexeev) events in realtime on Test stand!
+## [858b0826-6ab9-46a1-a0e8-5c05d8f3b6d7,56ffdae4-5429-4dea-bfe6-01ed36d8ba08,01.Test] - Pavel Alexeev on `test` env.
+## Filtering "NOT IN" events by https://stackoverflow.com/questions/44563115/how-to-use-jq-to-filter-select-items-not-in-list
+#ENV=DATA_DEV TOPIC=gidplatform-test.tracking ./_kafkacat.consume-topic.sh -o-2 "$@" \
+#cat watch-events.example.sample-messages \
+#	| JQ_ADDON='| select(.payload.body.userId | index("858b0826-6ab9-46a1-a0e8-5c05d8f3b6d7"))
+#		| del(.partition, .tstype, .ts, .payload.body.context, .payload.remote_address, .payload.client, .payload.path, .payload.queryParams)
+#		| select(.payload.body.event as $event | ["press", "open", "close"] | index($event))
+#		| del(.payload.body.sentAt, .payload.body.writeKey, .payload.body.timestamp, .payload.body.integrations, .payload.body.anonymousId, .payload.body.userId)' \
+#			PYGMENTIZE_STYLE=dracula JSON_compact_JSON_payload
+## Example out:
+##{
+##    "topic": "gidplatform-test.tracking",
+##    "key": "cf15caa0858b4e2c46fdecc59f46c9ef0cf341895a06971396f5d4c69a85f395",
+##    "offset": 248644,
+##    "_ts_time": "2024-10-29T13:28:25 MSK",
+##    "payload": {
+##        "body": { "type": "track", "event": "open", "properties": {"iri": "ru.gid.app://loyal/profile?title=Профиль лояльность", "iri_prev": "ru.gid.app://main?title=Главная", "type": "screen", "pair": "1730208498818"}, "messageId": "415e42ed-c805-4513-a32d-25f121ff1dc1" }
+##    }
+##}
+
+## Opposite selecting condition: events, NOT IN provided list:
+#		| select(.payload.body.event as $event | ["seen", "hide", "press", "open", "close", "swipe"] | index($event) | not)' \
+
+## 1) Old(classic) way. But it is VERY SLOW (up to 3 seconds on message!) use pygmentize+compact-json
+#ENV=DATA_DEV TOPIC=gidplatform-test.tracking ./_kafkacat.consume-topic.sh -o-2 "$@" \
+#cat watch-events.example.sample-messages \
+#	| JQ_ADDON='| select(.payload.body.userId | index("858b0826-6ab9-46a1-a0e8-5c05d8f3b6d7"))
+#		| del(.partition, .tstype, .ts, .payload.body.context, .payload.remote_address, .payload.client, .payload.path, .payload.queryParams)
+#		| select(.payload.body.event as $event | ["press", "open", "close"] | index($event))
+#		| del(.topic, .key, .offset)' \
+#			COMPACT_JSON_LINE_LENGTH=40 PYGMENTIZE_STYLE=dracula JSON_compact_JSON_payload
+## Example out:
+##{
+##    "_ts_time": "2024-10-29T13:28:25 MSK",
+##    "payload": {
+##        "body": {
+##            "sentAt": "2024-10-29T13:28:24.709Z",
+##            "writeKey": "dev.local",
+##            "type": "track",
+##            "event": "open",
+##            "properties": {
+##                "iri": "ru.gid.app://loyal/profile?title=Профиль лояльность",
+##                "iri_prev": "ru.gid.app://main?title=Главная",
+##                "type": "screen",
+##                "pair": "1730208498818"
+##            },
+##            "messageId": "415e42ed-c805-4513-a32d-25f121ff1dc1",
+##            "timestamp": "2024-10-29T13:28:19.277Z",
+##            "integrations": {},
+##            "anonymousId": "584cca11-e9f6-4386-b22e-7d111a00f842",
+##            "userId": "[858b0826-6ab9-46a1-a0e8-5c05d8f3b6d7,56ffdae4-5429-4dea-bfe6-01ed36d8ba08,01.Test]"
+##        }
+##    }
+##}
+
+## 2) (recommended!) Add new common function JQ_track_event expecially for the events for easy use
+#cat watch-events.example.sample-messages \
+#	| JQ_ADDON='	| select(.meta.userId | index("858b0826-6ab9-46a1-a0e8-5c05d8f3b6d7"))
+#			| select(.event.eventName as $event | ["press", "open", "close"] | index($event))
+#	' JQ_track_event
+## Example out:
+##{
+##  "_ts_time": "2024-10-29T13:29:09 MSK",
+##  "meta": {
+##    "userId": "[858b0826-6ab9-46a1-a0e8-5c05d8f3b6d7,56ffdae4-5429-4dea-bfe6-01ed36d8ba08,01.Test]",
+##    "accoutId": "858b0826-6ab9-46a1-a0e8-5c05d8f3b6d7",
+##    "timestamp": "2024-10-29T13:29:03.291Z"
+##  },
+##  "event": {
+##    "type": "track",
+##    "eventName": "close",
+##    "properties": {
+##      "iri": "ru.gid.app://main?title=Главная",
+##      "iri_prev": "ru.gid.app://loyal/profile?title=Профиль лояльность",
+##      "type": "screen",
+##      "pair": "1730206762372",
+##      "open_duration_ms": "13426"
+##    }
+##  }
+##}
+#exit
+
+## 2.1) Real example of run
+#ENV=DATA_DEV TOPIC=gidplatform-test.tracking ./_kafkacat.consume-topic.sh -o-2 "$@" \
+#	| JQ_ADDON='	| select(.meta.userId | index("858b0826-6ab9-46a1-a0e8-5c05d8f3b6d7"))
+#			| select(.event.eventName as $event | ["press", "open", "close"] | index($event))
+#	' JQ_track_event
