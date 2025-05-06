@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 ### !WARNING! Kcat have no builtin possibility to produce in AVRO. See https://github.com/edenhill/kcat/issues/226
 ### That example by https://forum.confluent.io/t/can-you-produce-avro-data-with-kafkacat/384/3

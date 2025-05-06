@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # Script to PUT (add or update) kafka-connect connector
 # API detailed description: https://docs.confluent.io/platform/current/connect/references/restapi.html#put--connectors-(string-name)-config

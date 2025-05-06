@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # Script to restart kafka-connect connector.
 # API detailed description: https://docs.confluent.io/platform/current/connect/references/restapi.html#connectors

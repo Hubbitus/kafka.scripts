@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # Show all kafka-connect connectors with status
 # API detailed description: https://docs.confluent.io/platform/current/connect/references/restapi.html#connectors

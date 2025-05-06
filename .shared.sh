@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 [[ -e "$(dirname $0)/.config.global.sh" ]] && source "$(dirname $0)/.config.global.sh"
 

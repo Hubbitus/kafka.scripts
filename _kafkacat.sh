@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # Script to general purpose call kafkacat from podman-container. All arguments passed directly to it
 # See https://github.com/edenhill/kafkacat for kafkacat doc

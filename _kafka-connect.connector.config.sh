@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # Script to show kafka-connect connector config.
 # API detailed description: https://docs.confluent.io/platform/current/connect/references/restapi.html#get--connectors-(string-name)-config

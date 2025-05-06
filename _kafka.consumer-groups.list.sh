@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # Script to list consumer groups. Essentially sink adapters.
 # Example:

@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # Script to show current logging settings of kafka-connect cluster
 # API detailed description: https://docs.confluent.io/platform/current/connect/logging.html

@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # Script to reset consumer group (for connector most probably).
 # You may find KAFKA_CONSUMER_GROUP value something like: ./_kafka.consumer-groups.list.sh | grep EntityAbstract2

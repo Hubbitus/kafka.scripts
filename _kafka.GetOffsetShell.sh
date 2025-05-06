@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # Script to obtain topic offsets (effectively amount of messages in it)
 

@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # Script to REinstall connector: Get congig, delete, put with same config
 # API detailed description: https://docs.confluent.io/platform/current/connect/references/restapi.html#put--connectors-(string-name)-config

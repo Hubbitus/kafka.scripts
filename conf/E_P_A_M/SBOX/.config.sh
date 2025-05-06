@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 [ "$0" = "${BASH_SOURCE[0]}" ] && echo 'Config file must be sourced!' && exit 1
 

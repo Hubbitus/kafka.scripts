@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # Script to general purpose call kafkactl from podman-container. All arguments passed directly to it
 # See https://github.com/deviceinsight/kafkactl for kafkactl doc

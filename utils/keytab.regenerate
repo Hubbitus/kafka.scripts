@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # Script to generate keytab auth file for the Kerberos authentication (see alternatives and possibilities in the DEADME.md file).
 # Example of run:

@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # Script to print messages from topic.
 # F.e. to list last 10 messages (with offsets -O) and exit:

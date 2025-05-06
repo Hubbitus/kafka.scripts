@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # Script to list present kafka topics.
 # Unlike _kafka.list-topics.sh will show also partitions

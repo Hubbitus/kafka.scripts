@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # Script to show kafka-connect connector status and format its trace if present from JSON string to readable form
 # API detailed description: https://docs.confluent.io/platform/current/connect/references/restapi.html#connectors

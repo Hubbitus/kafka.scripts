@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # Script to list schema-registry SCHEMA available versions.
 # Uasge: SCHEMA=dev__bonus_to_gid ./_schema.list.versions.sh
