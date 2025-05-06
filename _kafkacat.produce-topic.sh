@@ -8,12 +8,10 @@ source "$(dirname $0)/.shared.sh"
 
 #source "$(dirname $0)/_kafkacat.sh" -P -K: "$@"
 
-set -x
-
 #echo 'key1:{"one": 1}' | podman exec -i $(kafkacat_exec_cache) cat -
 #exit
 
 echo 'key1:{"one": 1}' | podman exec -i $(kafkacat_exec_cache) kafkacat \
-	-b "${KAFKA_BOOTSTRAP_SERVERS}" "${KAFKACAT_SECURE_OPTIONS[@]}" -m30 \
-		-P -e -t ${TOPIC} -K:
+	-b "${KAFKA_BOOTSTRAP_SERVERS}" "${KAFKACAT_SECURE_OPTIONS[@]}" \
+		-P -e -t ${TOPIC} -K: \
 			"$@"
