@@ -12,4 +12,4 @@ source "$(dirname $0)/.shared.sh"
 source "$(dirname $0)/_kafkacat.consume-topic.sh" \
 	-s value=avro ${KEY_SERIALIZATION} -r "${SCHEMA_REGISTRY}" \
 		"$@" | \
-			jq --unbuffered -c ". += { \"_schema_url_value\": (\"${SCHEMA_REGISTRY}/schemas/ids/\" + (.value_schema_id|tostring)) } + if .key_schema_id then { \"_schema_url_key\": (\"${SCHEMA_REGISTRY}/schemas/ids/\" + (.key_schema_id|tostring)) } else null end"
+			jq --unbuffered -c ". += { \"_schema_url_value\": (\"${SCHEMA_REGISTRY}/schemas/ids/\" + (.value_schema_id|tostring)) } + if .key_schema_id then { \"_schema_url_key\": (\"${SCHEMA_REGISTRY}/schemas/ids/\" + (.key_schema_id|tostring)) } else null end + { _ts_time: ( if .ts then .ts / 1000 | strftime(\"%Y-%m-%dT%H:%M:%S %Z\") else null end ) }"
