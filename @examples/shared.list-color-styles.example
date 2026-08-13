@@ -2,8 +2,6 @@
 
 set -e
 
-export ENV=DATA_DEV
-
 source ../.shared.sh
 
 pygmentize -L styles --json | jq '.styles | keys[]' -r \
@@ -13,7 +11,7 @@ pygmentize -L styles --json | jq '.styles | keys[]' -r \
 #### STYLE ${style}:"
 #	TOPIC=gidplatform-dev.tracking N=1 ../_kafkacat.consume-topic.lastN.sh < /dev/null \
 	head -1 watch-events.example.sample-messages \
-		| PYGMENTIZE_STYLE=${style} JSON_compact_JSON_payload
+		| pygmentize -O style="${style}"
 	echo "code: $?"
 done | tee $(basename $0).example-styles
 
