@@ -41,7 +41,7 @@ function kafkacat_exec_cache(){
 	# container_exec_cache "kafkacat-exec-cache-${ENV}" docker.io/hubbitus/kafkacat-sasl:20210622 "${CONTAINER_CACHE_EXTRA_OPTIONS_kafkacat[@]}"
 	# echo kafkacat
 
-	container_exec_cache "kafkacat-exec-cache-${ENV}" docker.io/hubbitus/kafkacat-sasl:20240324 "${CONTAINER_CACHE_EXTRA_OPTIONS_kafkacat[@]}"
+	container_exec_cache "kafkacat-exec-cache-${ENV}" docker.io/hubbitus/kafkacat-sasl:20260812 "${CONTAINER_CACHE_EXTRA_OPTIONS_kafkacat[@]}"
 #	container_exec_cache "kafkacat-exec-cache-${ENV}" docker.io/edenhill/kcat:1.7.1 "${CONTAINER_CACHE_EXTRA_OPTIONS_kafkacat[@]}"
 	echo kcat
 }
@@ -86,17 +86,29 @@ function JQ_common(){
 }
 
 function JSON_compact(){
+	# Several options to make JSON more compact and readable:
+	#
+	# 1) pygmentize (`dnf instapython3-pygments`) - coloring.
 	# For coloring options you may select themes: pygmentize -L styles --json
 	# For the PYGMENTIZE_STYLE option see script .shared.list-color-styles and .shared.list-color-styles.styles.example as output
+	#
+	# 2) fracjson (https://github.com/j-brooke/FracturedJson) - compacting JSON on string.
+	# Install: `dotnet tool install --global fracjson`. If you prefer python over dotnet you may use fork: https://github.com/masaccio/compact-json (installation: pip install compact-json)
 	# For JSON compact options good playground of options: https://j-brooke.github.io/FracturedJson/
+	#
+	# 3) Introduced our script for redability! That is based on fracjson format, but extended!
 	JQ_OPTIONS=-c JQ \
-		| while read -r _json; do compact-json <( echo "${_json}" ) --max-inline-length ${COMPACT_JSON_LINE_LENGTH-1250} --max-compact-list-complexity 7 --no-ensure-ascii | pygmentize -O style=${PYGMENTIZE_STYLE-friendly}; done
+		| utils/json-format-redability.py | pygmentize -O style=${PYGMENTIZE_STYLE-paraiso-dark}
+
+#		| while read -r _json; do fracjson <( echo "${_json}" ) --MaxTotalLineLength $(tput cols) --MaxInlineComplexity 7 --MaxCompactArrayComplexity 7 | pygmentize -O style=${PYGMENTIZE_STYLE-friendly}; done
+#		| while read -r _json; do compact-json <( echo "${_json}" ) --max-inline-length $(tput cols) --max-compact-list-complexity 7 --no-ensure-ascii | pygmentize -O style=${PYGMENTIZE_STYLE-friendly}; done
 
 #		| while read -r _json; do underscore --wrapwidth $(tput cols) pretty -d "$_json" "$@" ; done
 }
 
 function JSON_compact_JSON_payload(){
-	JQ_ADDON="| del(.payload) + { payload: (.payload | fromjson) }${JQ_ADDON}" JSON_compact
+#	JQ_ADDON="| del(.payload) + { payload: (.payload | fromjson) }${JQ_ADDON}" JSON_compact
+	JQ_ADDON="| .payload |= fromjson ${JQ_ADDON}" JSON_compact
 }
 
 function JQ_track_event(){
